@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up & Login</title>
+    <link rel="stylesheet" href="login.css"> <!-- Optional: Add CSS for styling -->
+</head>
+<body>
+    <div class="container">
+        <h1><b>Create an Account</b></h1>
+        <form id="register-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" required placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required placeholder="Email">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="Password">
+            </div>
+            <button type="submit">Create Account</button>
+        </form>
+
+        <h2>Login</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="login-email">Email Address</label>
+                <input type="email" id="login-email" required placeholder="Email">
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" required placeholder="Password">
+            </div>
+            <button type="submit">Login</button>
+        </form>
+
+        <button id="profile-btn">View Profile</button>
+
+        <p id="message"></p> <!-- Display success/error messages -->
+    </div>
+
+    <script src="login.css"></script>
+</body>
+</html>

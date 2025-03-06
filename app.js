@@ -3,6 +3,7 @@
 // Defines routes (so far only /register, /login) 
 
 const express = require("express");
+const path = require("path");
 const mysql = require("mysql2");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -10,6 +11,7 @@ require("dotenv").config();
 
 const app = express();
 app.use(express.json());
+app.use(express.static(path.join(__dirname)));
 
 
 // env variables
@@ -31,6 +33,11 @@ db.connect(err => {
     if (err) throw err;
     console.log("Connected to MySQL");
 });
+
+// LANDING PAGE
+app.get("/", async (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"))
+})
 
 
 // Register user

@@ -1,11 +1,3 @@
-// app.js is the entry point of the node application
-// Sets up database connection
-// Defines routes (so far only /register, /login) 
-
-
-// const mysql = require("mysql2");
-// const jwt = require("jsonwebtoken");
-
 // IMPORTS
 const express = require("express");
 const app = express();
@@ -38,7 +30,11 @@ const mongodb_database = process.env.MONGODB_DATABASE;
 const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
 const node_session_secret = process.env.NODE_SESSION_SECRET;
 
-// Database connection
+// Salt rounds for hashing
+const saltRounds = 12;
+const expireTime = 23 * 60 * 60 * 1000;
+
+// CONNECTING TO MONGODB DATABASE
 // var { database } = require("./databaseConnection"); <-- later can add to database connection module
 
 const { MongoClient } = require("mongodb");
@@ -56,9 +52,7 @@ async function startApp() {
         // Access the database and collection
         const database = client.db("TastyThreadsDB");
         usersCollection = database.collection("users");
-
-        // You can now perform actions like finding users, inserting, etc.
-        console.log("🚀 Database Ready:", database.databaseName);
+        console.log("Database Ready:", database.databaseName);
 
         // Example: Find all users
         const users = await usersCollection.find({}).toArray();
@@ -67,17 +61,51 @@ async function startApp() {
     }
 }
 
+// CREATING MONGO STORE
+var mongoStore = MongoStore.create({
+    mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/sessions`,
+    crypto: {
+        secret: mongodb_session_secret
+    }
+})
+
 startApp();
 
+// Session
+app.use(
+    session({
+        secret: node_session_secret,
+        store: mongoStore,
+        saveUninitialized: false,
+        resave: true
+    })
+)
 
-// Salt rounds for hashing
-const saltRounds = 12;
-const expireTime = 23 * 60 * 60 * 1000;
+// Returns true if user is in a valid session, otherwise false
+function isValidSession(req) {
+    if (req.session.authenticated) {
+        return true;
+    }
+    return false;
+}
 
+// Middleware for validating a session
+function sessionValidation(req, res, next) {
+    if (isValidSession(req)) {
+        next();
+    } else {
+        res.redirect("/login");
+    }
+}
 
 // LANDING PAGE
 app.get("/", async (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"))
+})
+
+// HOME PAGE
+app.get("/home", async (req, res) => {
+    res.sendFile(path.join(__dirname, "home.html"))
 })
 
 // LOGIN PAGE
@@ -127,33 +155,62 @@ app.post("/registerUser", async (req, res) => {
         req.session.username = result[0].username;
         req.session.email = result[0].email;
         req.session.cookie.maxAge = expireTime;
-        res.sendFile(path.join(__dirname, "home.html"));
+        console.log("Successfully created user... redirecting to home page")
+        res.redirect("/home")
     } catch (err) {
         console.error("Error inserting user: ", err);
         res.status(500).send("Error registering user");
     }
 });
 
-// TODO: Login user TO REFACTOR TO MONGODB 
-// app.post("/login", (req, res) => {
-//     const { email, password } = req.body;
 
-//     const sql = "SELECT * FROM users WHERE email = ?";
-//     db.query(sql, [email], async (err, results) => {
-//         if (err) return res.status(500).send(err);
-//         if (results.length === 0) return res.status(401).send("User not found");
+// LOGIN PAGE
+app.get("/login", async (req, res) => {
+    res.sendFile(path.join(__dirname, "login.html"))
+});
 
-//         const user = results[0];
+// LOGIN AUTHENTICATION
+app.post("/loggingin", async (req, res) => {
+    var email = req.body.loginEmail;
+    var password = req.body.loginPassword;
 
-//         // Compare passwords
-//         const isMatch = await bcrypt.compare(password, user.password);
-//         if (!isMatch) return res.status(401).send("Invalid credentials");
+    //email format with 255 max char, and passowrd with 20 max char
+    const schema = Joi.object({
+        email: Joi.string().email().max(255).required(),
+        password: Joi.string().max(20).required(),
+    });
 
-//         // Generate JWT token
-//         const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: "1h" });
-//         res.json({ token });
-//     });
-// });
+    const validationResult = schema.validate({ email, password });
+
+    if (validationResult.error != null) {
+        res.redirect("/login");
+        return;
+    }
+    const result = await usersCollection
+        .find({ email: email })
+        .project({ email: 1, password: 1, _id: 1, username: 1 })
+        .toArray();
+
+    if (result.length != 1) {
+        console.log("results are weird")
+        res.redirect("/login");
+        return;
+    }
+
+    if (await bcrypt.compare(password, result[0].password)) {
+        req.session.authenticated = true;
+        req.session.username = result[0].username;
+        req.session.email = email;
+        req.session.cookie.maxAge = expireTime;
+        console.log("logged in successfully")
+        res.redirect("/home");
+        return;
+    } else {
+        console.log("logged in UNsuccessfully")
+        res.redirect("/login");
+        return;
+    }
+});
 
 // Protect routes middleware
 const authenticate = (req, res, next) => {

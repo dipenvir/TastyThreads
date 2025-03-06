@@ -39,6 +39,10 @@ app.get("/", async (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"))
 })
 
+// LOGIN PAGE
+app.get("/login", async (req, res) => {
+    res.sendFile(path.join(__dirname, "login.html"))
+})
 
 // Register user
 app.post("/register", async (req, res) => {

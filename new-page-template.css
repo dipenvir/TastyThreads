@@ -63,25 +63,3 @@ header img {
     margin-right: 3%;
     font-family: kanit;
 }
-
-.container {
-    width: 300px;
-    margin: auto;
-    padding-top: 100px;
-}
-
-.form-group {
-    margin-bottom: 10px;
-}
-
-button {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #218838;
-}

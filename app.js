@@ -1,6 +1,7 @@
 // IMPORTS
 const express = require("express");
 const app = express();
+const $ = require("jquery");
 const path = require("path");
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
@@ -71,7 +72,7 @@ var mongoStore = MongoStore.create({
 
 startApp();
 
-// Session
+// Session Middleware
 app.use(
     session({
         secret: node_session_secret,
@@ -97,6 +98,11 @@ function sessionValidation(req, res, next) {
         res.redirect("/login");
     }
 }
+
+// Route to check authenticated status (logged in vs out)
+app.get("/auth/status", (req, res) => {
+    res.json({ isAuthenticated: isValidSession(req), user: req.session.user || null });
+});
 
 // LANDING PAGE
 app.get("/", async (req, res) => {
@@ -192,7 +198,7 @@ app.post("/loggingin", async (req, res) => {
         .toArray();
 
     if (result.length != 1) {
-        console.log("results are weird")
+        console.log("multiple email accounts using same email lol")
         res.redirect("/login");
         return;
     }

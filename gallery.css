@@ -1,156 +1,87 @@
-
 @font-face {
-    font-family: kanit;
-    src: url(font/Oswald-VariableFont_wght.ttf);
-} 
-@font-face {
-    font-family: pacifico;
-    src: url(font/Pacifico/Pacifico-Regular.ttf);
-} 
-@font-face {
-    font-family: greatvibes;
-    src: url(font/Great_Vibes/GreatVibes-Regular.ttf);
+    font-family: 'Kanit';
+    src: url('font/Oswald-VariableFont_wght.ttf');
 }
+
 body {
     margin: 0;
     padding: 0;
-    background-color: #F1F8E9; /* Light minty green background */
-    box-sizing: border-box;
-    overflow-x: hidden;
+    background-color: #F1F8E9;
     font-family: 'Kanit', sans-serif;
     color: #333;
 }
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 header {
-    width: 100vw;
-    height: 12%;
+    width: 100%;
+    height: 10vh;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.4);
     position: fixed;
+    top: 0;
+    left: 0;
+    padding: 0 20px;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
 }
 
 nav li {
-    display: inline-block;
-    list-style: none;
-    padding: 0vh 1.5vw;
+    margin-right: 2rem;
 }
 
 nav a {
     text-decoration: none;
     color: #fff;
-    font-family: kanit;
-    font-size: x-large;
+    font-size: 1.2rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
 }
 
 nav a:hover {
     color: #FFA836;
-    transition: all 0.4s ease 0s;
-}
-
-#login:hover {
-    background-color: #FFA836;
-    transition: all 0.4s ease 0s;
-}
-
-header img {
-    margin-left: 5%;
 }
 
 #login {
-    font-size: 20px;
-    font-weight: 500;
-    color: white;
-    text-decoration: none;
-    background: rgba(0, 0, 0, 0.2);
-    border: #FFA836 solid 2px;
-    border-radius: 50px;
-    padding: 8px 30px;
-    margin-right: 3%;
-    font-family: kanit;
-}
-
-
-.cover {
-    background-image: url("img/background.webp");
-    background-position: center;
-    background-size: cover;
-    height: 100vh;
-
-}
-
-.opacity {
-    background-color: rgba(0, 0, 0, .5);
-    color: #fff;
-    height: 100vh;
-    padding-left: 5%;
-}
-
-.opacity p {
-    /* text-transform: uppercase; */
-    font-size: 2em;
-    color: #fff;
-
-}
-
-h1 {
-    text-transform: uppercase;
-    font-size: 6em;
-    font-family: kanit;
-    margin: 0;
-    padding-top: 13%;
-}
-
-#moto {
-    font-family:greatvibes;
-}
-h2 {
-    font-family: kanit;
-    border-bottom: #FFA836 solid 5px;
-}
-
-p {
-    font-family: body;
-    font-size: larger;
-    font-weight: bold;
-    color: #3333339b;
-    line-height: 2.0;
-}
-
-.text2 h2 {
+    background-color: #FFA836;
     border: none;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
 }
 
-h2 {
-    font-size: 3em;
-    text-transform: uppercase;
+#login:hover {
+    background-color: #FF8000;
 }
 
-.about{
-    padding-left: 5%;
-    padding-right: 5%;
-}
-
-
-
-
-
-/* GALLERY */
 .gallery-section {
     margin-top: 12vh;
     padding: 20px;
     text-align: center;
 }
 
-/* h1 {
+h1 {
     font-size: 3rem;
     margin-bottom: 30px;
     color: #FFA836;
     text-transform: uppercase;
     letter-spacing: 2px;
     font-weight: bold;
-} */
+}
 
 .slideshow-container {
     max-width: 80%;

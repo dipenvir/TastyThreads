@@ -1,4 +1,3 @@
-<!-- This is the first page user will see when opening our website, user can login/signup to go the home page -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,85 +6,154 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tasty Threads - Welcome</title>
     <link rel="stylesheet" href="index.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500&display=swap"
+        rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- <link rel="stylesheet" href="gallery.css"> -->
 </head>
 
 <body>
     <!-- NAVIGATION BAR -->
     <header id="navbar"></header>
-    <div class="cover">
-        <div class="opacity">
-            <h1>
-                Tasty Threads
-            </h1>
+
+    <!-- HERO SECTION -->
+    <div class="hero">
+        <div class="hero-overlay">
+            <h1>Tasty Threads</h1>
             <p id="moto">Connecting people through recipes</p>
-            <input type="button" value="Read More">
+            <a href="#" class="cta-button">Explore Recipes</a>
         </div>
     </div>
-    <!-- ABOUT SECTION -->
-    <div class="about">
-        <h2 id="name">
-            ABOUT - Tasty Threads
-        </h2>
 
+    <!-- ABOUT SECTION -->
+    <section class="about">
+        <h2>About Tasty Threads</h2>
         <p>
             Tasty Threads is a vibrant community where food lovers can share their favorite recipes,
             explore new flavors, and connect with like-minded culinary enthusiasts.
             Whether you're a home cook or a professional chef, our platform allows you to inspire
-            others with your delicious creations.</p>
+            others with your delicious creations.
+        </p>
         <p>
             Discover a diverse collection of recipes from all around the world, learn new cooking techniques,
             and experiment with fresh ingredients. At Tasty Threads, we believe that every recipe tells a story,
             and we're here to help you share yours with a welcoming community of foodies.
         </p>
-        <p>
-            Our platform makes it easy to post your recipes, add beautiful photos, and receive feedback
-            from other users. You can like, comment, and save recipes to try later. Whether you’re looking for
-            quick weeknight meals, healthy options, or indulgent treats, you'll find it all here.
-        </p>
-        <p>
-            Join Tasty Threads today and start your culinary journey. Share your passion for food,
-            make new friends, and find endless inspiration right at your fingertips!
-        </p>
+    </section>
 
-    </div>
+    <!-- RECIPE GALLERY -->
     <section class="gallery-section">
-        <h1>Recipe Gallery</h1>
-        <div class="slideshow-container">
-            <div class="mySlides fade">
-                <img src="img/dish1.jpg" style="width:100%" alt="Recipe 1">
-                <div class="text">Delicious Pasta</div>
+        <h2>Recipe Gallery</h2>
+        <div class="gallery-wrapper">
+            
+            <!-- Left Scroll Button -->
+            <button class="scroll-button left" onclick="scrollGallery(-1)">&#10094;</button>
+
+            <!-- Gallery Container -->
+            <div class="gallery-container">
+                <div class="gallery-item">
+                    <img src="img/pasta.jpg" alt="Delicious Pasta">
+                    <div class="overlay">
+                        <p>Delicious Pasta</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="img/salad.jpg" alt="Fresh Salad">
+                    <div class="overlay">
+                        <p>Fresh Salad</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="img/dessert.jpg" alt="Yummy Dessert">
+                    <div class="overlay">
+                        <p>Yummy Dessert</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="img/steak.webp" alt="Grilled Steak">
+                    <div class="overlay">
+                        <p>Grilled Steak</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="img/chicken.jpg" alt="Butter Chicken">
+                    <div class="overlay">
+                        <p>Butter Chicken</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="img/jamun.jpg" alt="Chocolate Cake">
+                    <div class="overlay">
+                        <p>Gulab Jamun</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="img/sushi.jpg" alt="Sushi Platter">
+                    <div class="overlay">
+                        <p>Sushi Platter</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="img/cocktail.webp" alt="cocktail">
+                    <div class="overlay">
+                        <p>Fresh Cocktail</p>
+                    </div>
+                </div>
             </div>
 
-            <div class="mySlides fade">
-                <img src="img/dish2.jpg" style="width:100%" alt="Recipe 2">
-                <div class="text">Fresh Salad</div>
-            </div>
-
-            <div class="mySlides fade">
-                <img src="img/dish3.jpg" style="width:100%" alt="Recipe 3">
-                <div class="text">Yummy Dessert</div>
-            </div>
-
-            <!-- Next and previous buttons -->
-            <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-            <a class="next" onclick="plusSlides(1)">&#10095;</a>
+            <!-- Right Scroll Button -->
+            <button class="scroll-button right" onclick="scrollGallery(1)">&#10095;</button>
         </div>
+    </section>
+    
 
-        <br>
-
-        <!-- The dots/circles -->
-        <div style="text-align:center">
-            <span class="dot" onclick="currentSlide(1)"></span>
-            <span class="dot" onclick="currentSlide(2)"></span>
-            <span class="dot" onclick="currentSlide(3)"></span>
+    <section class="why-choose-us">
+        <h2>Why Choose Tasty Threads?</h2>
+        <div class="features-container">
+            <div class="feature-item">
+                <h3>Diverse Recipes</h3>
+                <p>Explore recipes from cuisines all around the world.</p>
+            </div>
+            <div class="feature-item">
+                <h3>Easy to Use</h3>
+                <p>Our platform is designed to be simple and intuitive.</p>
+            </div>
+            <div class="feature-item">
+                <h3>Community Driven</h3>
+                <p>Connect with food lovers and share your own recipes.</p>
+            </div>
         </div>
     </section>
 
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Tasty Threads is a community-driven platform for food lovers to share and discover recipes.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Recipes</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#">Facebook<i class="fab fa-facebook"></i></a>
+                    <a href="#">Instagram<i class="fab fa-instagram"></i></a>
+                    <a href="#">Twitter<i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Tasty Threads. All rights reserved.</p>
+        </div>
+    </footer>
     <script src="gallery.js"></script>
     <script src="skeleton.js"></script>
-
 </body>
 
 </html>

@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up & Login</title>
-    <link rel="stylesheet" href="login.css"> <!-- Optional: Add CSS for styling -->
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="login.css">
 </head>
 
 <body>
@@ -16,8 +14,8 @@
 
     <div class="container">
         <!-- CREATING ACCOUNT -->
-        <h1><b>Create an Account</b></h1>
-        <form action="/registerUser" method="post" id="register-form">
+        <h1 id="register-head"><b>Create an Account</b></h1>
+        <form id="register-form">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required placeholder="Enter username">
@@ -34,8 +32,8 @@
         </form>
 
         <!-- LOG IN EXISTING ACCOUNT -->
-        <h2>Login</h2>
-        <form action="/loggingin" method="post" id="login-form">
+        <h1 id="login-head">Login</h1>
+        <form id="login-form">
             <div class="form-group">
                 <label for="login-email">Email Address</label>
                 <input type="email" id="login-email" name="loginEmail" required placeholder="Email">
@@ -47,13 +45,19 @@
             <button type="submit">Login</button>
         </form>
 
+        <!-- Toggle Between Login and Signup -->
+        <p id="toggle-message">
+            Already have an account? <a href="#" id="toggle-login">Login</a>
+            <br>
+            Don't have an account? <a href="#" id="toggle-register">Create Account</a>
+        </p>
+
         <button id="profile-btn">View Profile</button>
 
         <p id="message"></p> <!-- Display success/error messages -->
     </div>
 
-    <script src="login.css"></script>
-    <script src="skeleton.js"></script>
+    <script src="login.js"></script> <!-- Link to your JavaScript file -->
 </body>
 
 </html>

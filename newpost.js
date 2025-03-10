@@ -14,29 +14,69 @@
 // });
 
 
+
 async function fetchTags() {
-  try {
-    const response = await fetch("/tags");
-    const data = await response.json();
+  const response = await fetch("/tags");
+  const data = await response.json();
 
-    // Dynamically create checkboxes for each tag
-    const tagsContainer = document.getElementById("tagsContainer");
-    data.availableTags.forEach(tag => {
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.name = "tags";
-      checkbox.value = tag;
-      tagsContainer.appendChild(checkbox);
+  // Populate Category checkboxes
+  const categoryContainer = document.getElementById("categoryContainer");
+  data.availableTags.categories.forEach(tag => {
+    const checkbox = createCheckbox("category", tag);
+    categoryContainer.appendChild(checkbox);
+  });
 
-      const label = document.createElement("label");
-      label.textContent = tag;
-      tagsContainer.appendChild(label);
+  // Populate Cuisine checkboxes
+  const cuisineContainer = document.getElementById("cuisineContainer");
+  data.availableTags.cuisines.forEach(tag => {
+    const checkbox = createCheckbox("cuisine", tag);
+    cuisineContainer.appendChild(checkbox);
+  });
 
-      tagsContainer.appendChild(document.createElement("br"));
-    });
-  } catch (error) {
-    console.error("Error fetching tags:", error);
-  }
+  // Populate Meal Time checkboxes
+  const mealTimeContainer = document.getElementById("mealTimeContainer");
+  data.availableTags.meal_times.forEach(tag => {
+    const checkbox = createCheckbox("meal_time", tag);
+    mealTimeContainer.appendChild(checkbox);
+  });
 }
 
-fetchTags(); // Load tags when the page loads
+// Function to create a checkbox dynamically
+function createCheckbox(name, value) {
+  const div = document.createElement("div");
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.name = name;
+  checkbox.value = value;
+
+  const label = document.createElement("label");
+  label.textContent = value;
+
+  div.appendChild(checkbox);
+  div.appendChild(label);
+  return div;
+}
+
+fetchTags();
+
+
+// Collects the user-selected category, cuisine, and meal_time values
+document.getElementById("recipeForm").addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  const formData = new FormData(this);
+
+  // Send form data to backend
+  fetch("/posting", {
+    method: "POST",
+    body: formData
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Recipe submitted:", data);
+      // Optionally handle success
+    })
+    .catch(error => {
+      console.error("Error:", error);
+    });
+});

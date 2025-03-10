@@ -19,9 +19,24 @@
         <label>Ingredients: <input type="text" name="ingredients" required /></label>
         <label>Instructions: <textarea name="instructions" required></textarea></label>
 
+        <!-- TAG SECTIONS -->
         <div id="tagsContainer">
-            <p>Select Categories:</p>
-            <!-- Checkboxes will be inserted here dynamically by newpost.js -->
+            <p>Select Tags:</p>
+
+            <div id="categoryContainer">
+                <h3>Category</h3>
+                <!-- Category checkboxes will be inserted here -->
+            </div>
+
+            <div id="cuisineContainer">
+                <h3>Cuisine</h3>
+                <!-- Cuisine checkboxes will be inserted here -->
+            </div>
+
+            <div id="mealTimeContainer">
+                <h3>Meal Time</h3>
+                <!-- Meal Time checkboxes will be inserted here -->
+            </div>
         </div>
 
         <label>Image: <input type="file" name="image" accept="image/*" /></label>

@@ -224,17 +224,26 @@ app.post("/loggingin", async (req, res) => {
 // CREATING A NEW POST PAGE
 app.get("/tags", async (req, res) => {
   try {
-    // Fetch distinct tags from the database
-    const tags = await recipiesCollection.distinct("tags"); // Get unique category names
+    // Fetch distinct tags for each category
+    const categories = await recipiesCollection.distinct("tags.category");
+    const cuisines = await recipiesCollection.distinct("tags.cuisine");
+    const meal_times = await recipiesCollection.distinct("tags.meal_time");
 
-    // Send tags as JSON response
-    res.json({ availableTags: tags });
+    // Send structured tag data
+    res.json({
+      availableTags: {
+        categories,
+        cuisines,
+        meal_times
+      }
+    });
   }
   catch (error) {
     console.error("Error fetching tags:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 app.get("/newPost", sessionValidation, (req, res) => {
   try {
@@ -250,17 +259,22 @@ app.get("/newPost", sessionValidation, (req, res) => {
 
 app.post("/posting", upload.single("image"), async (req, res) => {
   try {
-    const { title, ingredients, instructions, tags } = req.body;
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null; // TODO Assuming local storage
+    const { title, ingredients, instructions, category, cuisine, meal_time } = req.body;
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null; // Assuming local storage
 
-    console.log("Tags should appear here: ", tags)
+    console.log("Tags should appear here:", { category, cuisine, meal_time });
 
+    // I've made the tags an object for easier querying later
     const newRecipe = {
       title,
-      image: imageUrl,  // Store image URL
-      ingredients: ingredients.split(","), // Convert CSV to array
+      image: imageUrl,
+      ingredients: ingredients.split(","),  // Convert CSV to array via split fxn
       instructions,
-      tags: Array.isArray(tags) ? tags : [], // Convert CSV to array
+      tags: {
+        category: category || null,         // Example: "Dessert", "Main Course"
+        cuisine: cuisine || null,           // Example: "Italian", "Mexican"
+        meal_time: meal_time || null        // Example: "Breakfast", "Dinner"
+      },
       createdAt: new Date(),
     };
 
@@ -273,6 +287,7 @@ app.post("/posting", upload.single("image"), async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 // Protect routes middleware
 const authenticate = (req, res, next) => {

@@ -3,9 +3,57 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("login-form");
     const profileBtn = document.getElementById("profile-btn");
     const message = document.getElementById("message");
+    const toggleLogin = document.getElementById("toggle-login"); 
+    const toggleRegister = document.getElementById("toggle-register");
+    const createAccountHeading = document.getElementById("register-head")
+    const loginHeading = document.getElementById("login-head")
+    const toggleMessage = document.getElementById("toggle-message");
 
     const API_URL = "http://localhost:3000"; // Adjust if running on AWS
 
+    // Function to show the register form and hide the login form
+    const showRegisterForm = () => {
+        registerForm.style.display = "block";
+        loginForm.style.display = "none";
+        createAccountHeading.style.display = "block"; // Show Create Account heading
+        loginHeading.style.display = "none"; // Hide Login heading
+        toggleMessage.innerHTML = 'Already have an account? <a href="#" id="toggle-login">Login</a>'; // Update toggle message
+        reattachEventListeners(); // Reattach event listeners after updating the content
+    };
+
+    // Function to show the login form and hide the register form
+    const showLoginForm = () => {
+        loginForm.style.display = "block";
+        registerForm.style.display = "none";
+        createAccountHeading.style.display = "none"; // Hide Create Account heading
+        loginHeading.style.display = "block"; // Show Login heading
+        toggleMessage.innerHTML = 'Don\'t have an account? <a href="#" id="toggle-register">Create Account</a>'; // Update toggle message
+        reattachEventListeners(); // Reattach event listeners after updating the content
+    };
+
+    // Function to reattach event listeners
+    const reattachEventListeners = () => {
+        const toggleLogin = document.getElementById("toggle-login");
+        const toggleRegister = document.getElementById("toggle-register");
+
+        if (toggleLogin) {
+            toggleLogin.addEventListener("click", (e) => {
+                e.preventDefault();
+                showLoginForm();
+            });
+        }
+
+        if (toggleRegister) {
+            toggleRegister.addEventListener("click", (e) => {
+                e.preventDefault();
+                showRegisterForm();
+            });
+        }
+    };
+
+    // Initially show the register form and hide the login form
+    showRegisterForm();
+    
     // Register user
     registerForm.addEventListener("submit", async (e) => {
         e.preventDefault();

@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("login-form");
     const profileBtn = document.getElementById("profile-btn");
     const message = document.getElementById("message");
-    const toggleLogin = document.getElementById("toggle-login"); 
+    const toggleLogin = document.getElementById("toggle-login");
     const toggleRegister = document.getElementById("toggle-register");
     const createAccountHeading = document.getElementById("register-head")
     const loginHeading = document.getElementById("login-head")
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Initially show the register form and hide the login form
     showRegisterForm();
-    
+
     // Register user
     registerForm.addEventListener("submit", async (e) => {
         e.preventDefault();

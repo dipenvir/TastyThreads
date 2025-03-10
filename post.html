@@ -1,0 +1,47 @@
+<!-- This is the first page user will see when opening our website, user can login/signup to go the home page -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><!-- Enter title here --></title>
+    <link rel="stylesheet" href="enter style sheet here">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <!-- NAVIGATION BAR -->
+    <header id="navbar"></header>
+
+    <form id="recipeForm" enctype="multipart/form-data">
+        <label>Title: <input type="text" name="title" required /></label>
+        <label>Ingredients (comma-separated): <input type="text" name="ingredients" required /></label>
+        <label>Instructions: <textarea name="instructions" required></textarea></label>
+        <label>Tags (comma-separated): <input type="text" name="tags" placeholder="e.g., Indian, Vegetarian"
+                required /></label>
+        <label>Image: <input type="file" name="image" accept="image/*" /></label>
+        <button type="submit">Post Recipe</button>
+    </form>
+
+    <script>
+        document.getElementById("recipeForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const response = await fetch("/newPost", {
+                method: "POST",
+                body: formData,
+            });
+
+            const result = await response.json();
+            alert(result.message);
+        });
+    </script>
+
+
+    <!-- Scripts -->
+    <script src="skeleton.js"></script>
+</body>
+
+</html>

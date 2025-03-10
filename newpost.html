@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a Recipe</title>
+    <link rel="stylesheet" href="enter style sheet here">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <!-- NAVIGATION BAR -->
+    <header id="navbar"></header>
+
+    <h2>Create a Recipe</h2>
+    <form action="/posting" method="post" id="recipeForm" enctype="multipart/form-data">
+        <label>Title: <input type="text" name="title" required /></label>
+        <label>Ingredients: <input type="text" name="ingredients" required /></label>
+        <label>Instructions: <textarea name="instructions" required></textarea></label>
+
+        <div id="tagsContainer">
+            <p>Select Categories:</p>
+            <!-- Checkboxes will be inserted here dynamically by newpost.js -->
+        </div>
+
+        <label>Image: <input type="file" name="image" accept="image/*" /></label>
+        <button type="submit">Post Recipe</button>
+    </form>
+
+    <!-- Scripts -->
+    <script src="skeleton.js"></script>
+    <script src="newpost.js"></script>
+</body>
+
+</html>

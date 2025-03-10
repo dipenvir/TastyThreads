@@ -175,7 +175,7 @@ app.post("/registerUser", async (req, res) => {
 
 // LOGIN PAGE
 app.get("/login", async (req, res) => {
-  res.sendFile(path.join(__dirname, "login.html"))
+  res.sendFile(path.join(__dirname, "login2.html"))
 });
 
 // LOGIN AUTHENTICATION

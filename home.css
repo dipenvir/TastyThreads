@@ -1,65 +1,246 @@
-@font-face {
-    font-family: kanit;
-    src: url(font/Oswald-VariableFont_wght.ttf);
-}
-
+/* General Styles */
 body {
+    font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #F1F8E9;
-    /* Light minty green background */
-    box-sizing: border-box;
-    overflow-x: hidden;
-    font-family: 'Kanit', sans-serif;
     color: #333;
+    background-color: #f9f9f9;
 }
 
-header {
-    width: 100vw;
-    height: 12%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.2);
-    position: fixed;
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-nav li {
-    display: inline-block;
-    list-style: none;
-    padding: 0vh 1.5vw;
+h1,
+h2,
+h3,
+h4 {
+    margin: 0;
+    color: #444;
 }
 
-nav a {
+a {
     text-decoration: none;
-    color: #fff;
-    font-family: kanit;
-    font-size: x-large;
+    color: inherit;
 }
 
-nav a:hover {
-    color: #FFA836;
-    transition: all 0.4s ease 0s;
+
+
+/* Welcome Section */
+.welcome {
+    text-align: center;
+    padding: 40px 0;
+    background-color: #fff;
 }
 
-#login:hover {
-    background-color: #FFA836;
-    transition: all 0.4s ease 0s;
+.welcome h2 {
+    font-size: 32px;
+    margin-bottom: 10px;
 }
 
-header img {
-    margin-left: 5%;
+.welcome p {
+    font-size: 18px;
+    color: #666;
 }
 
-#login {
-    font-size: 20px;
-    font-weight: 500;
+/* Categories Section */
+.categories {
+  padding: 40px 0;
+  background-color: #f9f9f9;
+}
+
+.categories h3 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 categories in a row */
+  gap: 20px;
+}
+
+.category-card {
+  text-align: center;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, filter 0.3s ease; /* Add filter to transition */
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  filter: brightness(1.1); /* Lighten the card on hover */
+}
+
+.category-card img {
+  width: 100%;
+  height: 250px; /* Increased height for bigger images */
+  object-fit: cover;
+}
+
+.category-card h4 {
+  font-size: 24px; /* Increased font size */
+  padding: 20px; /* Increased padding */
+}
+/* Search Section */
+.search {
+    text-align: center;
+    padding: 40px 0;
+    background-color: #fff;
+}
+
+.search input {
+    padding: 10px;
+    width: 300px;
+    max-width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.search button {
+    padding: 10px 20px;
+    background-color: #2c3e50;
     color: white;
-    text-decoration: none;
-    background: rgba(0, 0, 0, 0.2);
-    border: #FFA836 solid 2px;
-    border-radius: 50px;
-    padding: 8px 30px;
-    margin-right: 3%;
-    font-family: kanit;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/* Saved Recipes Section */
+.saved-recipes {
+    padding: 40px 0;
+    background-color: #f9f9f9;
+}
+
+.saved-recipes h3 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.recipe-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.recipe-card {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    position: relative;
+    /* For positioning the time and ingredients box */
+}
+
+.recipe-card:hover {
+    transform: translateY(-5px);
+}
+
+.recipe-card img {
+    width: 150px;
+    /* Fixed width for the image */
+    height: 150px;
+    /* Fixed height for the image */
+    object-fit: cover;
+    margin-right: 20px;
+    /* Space between image and text */
+}
+
+.recipe-details {
+    flex: 1;
+    /* Take up remaining space */
+    padding: 10px;
+}
+
+.recipe-details h4 {
+    font-size: 24px;
+    /* Bigger font for recipe name */
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    /* Pop of color */
+}
+
+.recipe-details p {
+    font-size: 16px;
+    /* Intro line font size */
+    color: #666;
+    margin: 0 0 10px 0;
+}
+
+.recipe-details button {
+    padding: 10px 20px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.recipe-details button:hover {
+    background-color: #e65a50;
+    /* Darker shade on hover */
+}
+
+/* Time and Ingredients Box */
+.recipe-info {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    /* Semi-transparent white background */
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: right;
+}
+
+.recipe-info p {
+    font-size: 14px;
+    color: #333;
+    margin: 0 0 5px 0;
+    display: flex;
+    align-items: center;
+}
+
+.recipe-info p i {
+    margin-right: 5px;
+    /* Space between icon and text */
+    color: #2c3e50;
+    /* Icon color */
+}
+
+.empty-state {
+    text-align: center;
+    color: #666;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .recipe-card {
+        flex-direction: column;
+        /* Stack image and text vertically */
+        text-align: center;
+    }
+
+    .recipe-card img {
+        width: 100%;
+        /* Full-width image on mobile */
+        height: 200px;
+        /* Larger height for better visibility */
+        margin-right: 0;
+        /* Remove margin */
+        margin-bottom: 10px;
+        /* Add space between image and text */
+    }
 }

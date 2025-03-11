@@ -267,6 +267,7 @@ app.get("/newPost", sessionValidation, (req, res) => {
 
 app.post("/posting", upload.single("image"), async (req, res) => {
   try {
+    const user = req.session.email;
     const { title, ingredients, instructions, category, cuisine, meal_time } = req.body;
     const imageUrl = req.file ? `/uploads/${req.file.filename}` : null; // Assuming local storage
 
@@ -274,6 +275,7 @@ app.post("/posting", upload.single("image"), async (req, res) => {
 
     // I've made the tags an object for easier querying later
     const newRecipe = {
+      user,
       title,
       image: imageUrl,
       ingredients: ingredients.split(","),  // Convert CSV to array via split fxn

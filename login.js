@@ -62,14 +62,24 @@ document.addEventListener("DOMContentLoaded", () => {
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
 
+        // Sends POST request containing user info as JSON data
+        // NOTE: fetch doesn't automatically follow redirects (/registerUser in app.js redirects user to /home), so have to manually handle redirect in the frontend (below)
         const response = await fetch(`${API_URL}/registerUser`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, email, password }),
         });
 
-        const data = await response.text();
-        message.textContent = data;
+        // Parse the response as JSON
+        const data = await response.json();
+
+        // If there's a redirect, navigate the user
+        if (data.redirect) {
+            window.location.href = data.redirect;
+        } else {
+            // Display any error messages
+            message.textContent = data.message;
+        }
     });
 
     // Login user
@@ -79,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const email = document.getElementById("login-email").value;
         const password = document.getElementById("login-password").value;
 
-        const response = await fetch(`${API_URL}/login`, {
+        const response = await fetch(`${API_URL}/loggingin`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),

@@ -164,8 +164,11 @@ app.post("/registerUser", async (req, res) => {
     req.session.username = result[0].username;
     req.session.email = result[0].email;
     req.session.cookie.maxAge = expireTime;
+
     console.log("Successfully created user... redirecting to home page")
-    res.redirect("/home")
+
+    // Response
+    res.json({ redirect: "/home" });
   } catch (err) {
     console.error("Error inserting user: ", err);
     res.status(500).send("Error registering user");

@@ -97,11 +97,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const data = await response.json();
 
-        if (response.ok) {
-            localStorage.setItem("token", data.token);
-            message.textContent = "Login successful!";
+        if (data.redirect) {
+            window.location.href = data.redirect;
         } else {
-            message.textContent = "Login failed!";
+            message.textContent = data.message;
         }
     });
 

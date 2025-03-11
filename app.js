@@ -169,6 +169,7 @@ app.post("/registerUser", async (req, res) => {
 
     // Response
     res.json({ redirect: "/home" });
+
   } catch (err) {
     console.error("Error inserting user: ", err);
     res.status(500).send("Error registering user");
@@ -183,8 +184,8 @@ app.get("/login", async (req, res) => {
 
 // LOGIN AUTHENTICATION
 app.post("/loggingin", async (req, res) => {
-  var email = req.body.loginEmail;
-  var password = req.body.loginPassword;
+  var email = req.body.email;
+  var password = req.body.password;
 
   //email format with 255 max char, and passowrd with 20 max char
   const schema = Joi.object({
@@ -195,7 +196,7 @@ app.post("/loggingin", async (req, res) => {
   const validationResult = schema.validate({ email, password });
 
   if (validationResult.error != null) {
-    res.redirect("/login");
+    res.json({ redirect: "/login" });
     return;
   }
   const result = await usersCollection
@@ -205,7 +206,7 @@ app.post("/loggingin", async (req, res) => {
 
   if (result.length != 1) {
     console.log("multiple email accounts using same email lol")
-    res.redirect("/login");
+    res.json({ redirect: "/login" });
     return;
   }
 
@@ -214,12 +215,16 @@ app.post("/loggingin", async (req, res) => {
     req.session.username = result[0].username;
     req.session.email = email;
     req.session.cookie.maxAge = expireTime;
+
+    // Response
     console.log("logged in successfully")
-    res.redirect("/home");
+    res.json({ redirect: "/home" });
     return;
-  } else {
+
+  }
+  else {
     console.log("logged in UNsuccessfully")
-    res.redirect("/login");
+    res.json({ redirect: "/login" });
     return;
   }
 });

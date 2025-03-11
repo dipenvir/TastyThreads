@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (data.redirect) {
             window.location.href = data.redirect;
         } else {
-            message.textContent = data.message;
+            alert(data.message);
         }
     });
 

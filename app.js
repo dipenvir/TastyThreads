@@ -104,18 +104,35 @@ function sessionValidation(req, res, next) {
 
 // Route to check authenticated status (logged in vs out)
 app.get("/auth/status", (req, res) => {
-  res.json({ isAuthenticated: isValidSession(req), user: req.session.user || null });
+  res.json({ isAuthenticated: isValidSession(req), user: req.session.username || null });
 });
 
 // LANDING PAGE
 app.get("/", async (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"))
-})
+}
+)
 
 // HOME PAGE
 app.get("/home", async (req, res) => {
   res.sendFile(path.join(__dirname, "home.html"))
 })
+
+// GET USERNAME API (Populates the user's username in home page)
+app.get("/getUser", async (req, res) => {
+  if (req.session.authenticated) {
+    res.json({ username: req.session.username });
+  } else {
+    res.json({ username: null });
+  }
+});
+
+// LOGOUT
+app.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect("/");
+})
+
 
 // LOGIN PAGE
 app.get("/login", async (req, res) => {
@@ -196,18 +213,22 @@ app.post("/loggingin", async (req, res) => {
   const validationResult = schema.validate({ email, password });
 
   if (validationResult.error != null) {
-    res.json({ redirect: "/login" });
-    return;
+    return res.json({ message: "Invalid email or password." });
   }
+
+  // Check if user exists
   const result = await usersCollection
     .find({ email: email })
     .project({ email: 1, password: 1, _id: 1, username: 1 })
     .toArray();
 
-  if (result.length != 1) {
-    console.log("multiple email accounts using same email lol")
-    res.json({ redirect: "/login" });
-    return;
+  if (result.length === 0) {
+    return res.json({ message: "User does not exist." });
+  }
+
+  if (result.length > 1) {
+    console.log("Multiple email accounts using the same email.");
+    return res.json({ message: "Multiple accounts found. Contact support." });
   }
 
   if (await bcrypt.compare(password, result[0].password)) {
@@ -218,14 +239,11 @@ app.post("/loggingin", async (req, res) => {
 
     // Response
     console.log("logged in successfully")
-    res.json({ redirect: "/home" });
-    return;
+    return res.json({ redirect: "/home" });
 
   }
   else {
-    console.log("logged in UNsuccessfully")
-    res.json({ redirect: "/login" });
-    return;
+    return res.json({ message: "Incorrect password." });
   }
 });
 

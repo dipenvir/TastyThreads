@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtered Recipes</title>
+</head>
+
+<body>
+    <h1>Filtered Recipes</h1>
+
+    <!-- Dropdown filters -->
+    <label for="category">Category:</label>
+    <select id="category" onchange="updateFilters()">
+        <option value="">All</option>
+    </select>
+
+    <label for="cuisine">Cuisine:</label>
+    <select id="cuisine" onchange="updateFilters()">
+        <option value="">All</option>
+    </select>
+
+    <label for="meal_time">Meal Time:</label>
+    <select id="meal_time" onchange="updateFilters()">
+        <option value="">All</option>
+    </select>
+
+    <hr>
+
+    <!-- Recipes Display -->
+    <div id="recipe-list"></div>
+
+    <script src="recipies.js"></script>
+</body>
+
+</html>

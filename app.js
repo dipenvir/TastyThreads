@@ -316,6 +316,45 @@ app.post("/posting", upload.single("image"), async (req, res) => {
   }
 });
 
+// RECIPIES PAGE
+app.get("/recipes", async (req, res) => {
+  try {
+    const { category, cuisine, meal_time } = req.query;
+
+    let filter = [];
+
+    if (category) filter.push({ "tags.category": category });
+    if (cuisine) filter.push({ "tags.cuisine": cuisine });
+    if (meal_time) filter.push({ "tags.meal_time": meal_time });
+
+    // Apply filtering only if there are conditions
+    const query = filter.length > 0 ? { $and: filter } : {};
+
+    const recipes = await recipiesCollection.find(query).toArray();
+    res.json(recipes);
+  }
+  catch (error) {
+    console.error("Error fetching recipes:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+app.get("/getFilters", async (req, res) => {
+  try {
+    const categories = await recipiesCollection.distinct("tags.category");
+    const cuisines = await recipiesCollection.distinct("tags.cuisine");
+    const meal_times = await recipiesCollection.distinct("tags.meal_time");
+
+    res.json({ categories, cuisines, meal_times });
+  } catch (error) {
+    console.error("Error fetching filters:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
 
 // Protect routes middleware
 const authenticate = (req, res, next) => {

@@ -58,19 +58,20 @@ body {
     color: #777;
     margin: 0;
 }
+
 /* Horizontal Line */
 .divider {
     border: 0;
     height: 3px;
     background: #e65a50;
     margin: 0px;
-  }
+}
+
 /* Profile Content */
 .profile-content {
     padding: 40px;
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
-    
 }
 
 .profile-content h2 {
@@ -135,6 +136,7 @@ body {
     background: #e65a50;
     transform: scale(1.05);
 }
+
 .user-stats {
     display: flex;
     justify-content: space-around;
@@ -143,22 +145,20 @@ body {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .stat {
+}
+
+.stat {
     text-align: center;
     margin: 1px 15px;
-  }
-  
-  .stat-number {
+}
+
+.stat-number {
     font-size: 24px;
     font-weight: bold;
     color: #e65a50;
-  }
-  
-  .stat-label {
+}
+
+.stat-label {
     font-size: 14px;
     color: #666;
-  }
-
-  
+}

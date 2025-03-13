@@ -27,7 +27,7 @@ async function fetchRecipes() {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const recipes = await response.json();
-        console.log("Fetched Recipes:", recipes); // Debugging
+        // console.log("Fetched Recipes:", recipes); // Debugging
 
         const recipeList = document.getElementById("recipe-list");
         if (recipes.length === 0) {

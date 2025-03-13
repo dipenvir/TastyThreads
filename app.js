@@ -121,9 +121,15 @@ app.get("/home", async (req, res) => {
 // GET USERNAME API (Populates the user's username in home page)
 app.get("/getUser", async (req, res) => {
   if (req.session.authenticated) {
-    res.json({ username: req.session.username });
+    res.json({
+      username: req.session.username,
+      email: req.session.email
+    });
   } else {
-    res.json({ username: null });
+    res.json({
+      username: null,
+      email: null
+    });
   }
 });
 
@@ -371,6 +377,29 @@ app.get("/image/:id", async (req, res) => {
     res.send(recipe.image.data);
   } catch (error) {
     console.error("Error fetching image:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+// PROFILE PAGE
+app.get("/profile", (req, res) => {
+  res.sendFile(path.join(__dirname, "profile.html"));
+});
+
+app.get("/api/profile-recipes", async (req, res) => {
+  try {
+    console.log("Session data: ", req.session);
+    const userEmail = req.session.email;
+
+    if (!userEmail) {
+      return res.status(401).json({ error: "Unauthorized: No user logged in" });
+    }
+
+    const userRecipes = await recipesCollection.find({ user: userEmail }).toArray();
+    res.json(userRecipes);
+  } catch (error) {
+    console.error("Error fetching user recipes:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

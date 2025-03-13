@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await populateFilters();  // Populate dropdowns
 });
 
-// 🥗 Fetch and display recipes based on selected filters
+// Fetch and display recipes based on selected filters
 async function fetchRecipes() {
     const params = new URLSearchParams(window.location.search);
     const category = params.get("category") || "";
@@ -11,15 +11,18 @@ async function fetchRecipes() {
     const mealTime = params.get("meal_time") || "";
 
     let queryParams = [];
-    if (category) queryParams.push(`category=${category}`);
-    if (cuisine) queryParams.push(`cuisine=${cuisine}`);
-    if (mealTime) queryParams.push(`meal_time=${mealTime}`);
+    if (category) queryParams.push(`category=${encodeURIComponent(category)}`);
+    if (cuisine) queryParams.push(`cuisine=${encodeURIComponent(cuisine)}`);
+    if (mealTime) queryParams.push(`meal_time=${encodeURIComponent(mealTime)}`);
 
     const apiUrl = `/recipes?${queryParams.join("&")}`;
 
     try {
         const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
         const recipes = await response.json();
+        console.log("Fetched Recipes:", recipes); // Debugging
 
         const recipeList = document.getElementById("recipe-list");
         if (recipes.length === 0) {
@@ -27,23 +30,40 @@ async function fetchRecipes() {
             return;
         }
 
-        recipeList.innerHTML = recipes.map(recipe => `
-            <div>
-                <h2>${recipe.title}</h2>
-                <img src="${recipe.image}" alt="${recipe.title}" style="width:200px;">
-                <p><strong>Category:</strong> ${recipe.tags.category || "N/A"}</p>
-                <p><strong>Cuisine:</strong> ${recipe.tags.cuisine || "N/A"}</p>
-                <p><strong>Meal Time:</strong> ${recipe.tags.meal_time || "N/A"}</p>
-                <p><strong>Ingredients:</strong> ${recipe.ingredients.join(", ")}</p>
-                <p><strong>Instructions:</strong> ${recipe.instructions}</p>
-            </div>
-        `).join("");
+        recipeList.innerHTML = recipes.map(recipe => {
+            // 🔍 Extract image data
+            let imageSrc = "/img/bowl.jpg"; // Default image
+
+            if (recipe.image && recipe.image.data && recipe.image.mimetype) {
+                console.log("inside fetchRecipes: image, data, and mimetype detected", recipe.image);
+
+                // Directly use the Base64 string stored in `recipe.image.data` (our database already stores the image in Base64 encoded string)
+                imageSrc = `data:${recipe.image.mimetype};base64,${recipe.image.data}`;
+            }
+
+
+
+            return `
+                <div>
+                    <h2>${recipe.title}</h2>
+                    <img src="${imageSrc}" alt="${recipe.title}" style="width:200px;">
+                    <p><strong>Category:</strong> ${recipe.tags?.category || "N/A"}</p>
+                    <p><strong>Cuisine:</strong> ${recipe.tags?.cuisine || "N/A"}</p>
+                    <p><strong>Meal Time:</strong> ${recipe.tags?.meal_time || "N/A"}</p>
+                    <p><strong>Ingredients:</strong> ${recipe.ingredients?.join(", ") || "N/A"}</p>
+                    <p><strong>Instructions:</strong> ${recipe.instructions || "N/A"}</p>
+                </div>
+            `;
+        }).join("");
     }
     catch (error) {
         console.error("Error fetching recipes:", error);
         document.getElementById("recipe-list").innerHTML = "<p>Failed to load recipes.</p>";
     }
 }
+
+
+
 
 // 🏷️ Populate dropdown filters dynamically
 async function populateFilters() {

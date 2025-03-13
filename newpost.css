@@ -10,7 +10,6 @@ body {
     align-items: center;
     min-height: 100vh;
     background: url('img/bgg2.jpg') no-repeat center center/cover;
-   
 }
 
 .container {
@@ -113,23 +112,66 @@ button:active {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    justify-content: center; /* Center checkboxes horizontally */
+    gap: 15px; /* Space between checkboxes */
 }
 
+/* Custom Checkbox Styling */
 .checkbox-group label {
-    font-weight: normal;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    position: relative;
+    padding-left: 30px;
+    cursor: pointer;
     font-size: 0.9rem;
     color: #555;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .checkbox-group input[type="checkbox"] {
-    margin: 0;
-    accent-color: #e74c3c; /* Custom checkbox color */
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
 }
 
-/* File Input Styling */
+.checkbox-group .checkmark {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 18px;
+    width: 18px;
+    background-color: #fff;
+    border: 2px solid #e74c3c;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.checkbox-group input[type="checkbox"]:checked ~ .checkmark {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.checkbox-group .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 5px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-group input[type="checkbox"]:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Custom File Input Styling */
 .form-group input[type="file"] {
     padding: 0.5rem;
     background: rgba(255, 255, 255, 0.8);
@@ -137,6 +179,66 @@ button:active {
     border-radius: 8px;
     font-size: 0.9rem;
     color: #555;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input[type="file"]:focus {
+    border-color: #e74c3c;
+    box-shadow: 0 0 8px rgba(231, 76, 60, 0.2);
+    outline: none;
+}
+
+/* Custom File Input Button */
+.form-group input[type="file"]::file-selector-button {
+    padding: 0.5rem 1rem;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.form-group input[type="file"]::file-selector-button:hover {
+    background: #c0392b;
+}
+
+/* Custom Select Dropdown Styling */
+.form-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: url('data:image/svg+xml;utf8,<svg fill="%23e74c3c" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 0.75rem center/12px 12px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding-right: 2.5rem;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #555;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group select:focus {
+    border-color: #e74c3c;
+    box-shadow: 0 0 8px rgba(231, 76, 60, 0.2);
+    outline: none;
+}
+
+/* Custom Select Dropdown Options */
+.form-group select option {
+    background: #fff;
+    color: #333;
+    padding: 0.5rem;
+}
+
+/* Hover Effect for Dropdown Options */
+.form-group select option:hover {
+    background: #e74c3c;
+    color: white;
 }
 
 /* Responsive Design */
@@ -158,4 +260,76 @@ button:active {
     button {
         font-size: 0.9rem;
     }
+
+    .checkbox-group label {
+        font-size: 0.8rem;
+    }
+
+    .checkbox-group .checkmark {
+        height: 16px;
+        width: 16px;
+    }
+
+    .form-group select {
+        font-size: 0.9rem;
+    }
+}
+/* Custom Select Dropdown Container */
+.custom-select {
+    position: relative;
+    width: 100%;
+}
+
+.custom-select select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.8);
+    color: #555;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.custom-select select:focus {
+    border-color: #e74c3c;
+    box-shadow: 0 0 8px rgba(231, 76, 60, 0.2);
+    outline: none;
+}
+
+/* Custom Dropdown Arrow */
+.custom-arrow {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #e74c3c;
+    pointer-events: none;
+    transition: transform 0.3s ease;
+}
+
+/* Rotate Arrow When Dropdown is Open */
+.custom-select select:focus ~ .custom-arrow {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+/* Dropdown Options Styling */
+.custom-select select option {
+    background: #fff;
+    color: #333;
+    padding: 0.5rem;
+}
+
+/* Hover Effect for Dropdown Options */
+.custom-select select option:hover {
+    background: #e74c3c;
+    color: white;
 }

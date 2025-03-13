@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="newpost.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -39,36 +40,67 @@
                 <div class="tag-section" id="categoryContainer">
                     <h3>Category</h3>
                     <div class="checkbox-group">
-                        <label><input type="checkbox" name="category" value="Vegetarian"> Vegetarian</label>
-                        <label><input type="checkbox" name="category" value="Vegan"> Vegan</label>
-                        <label><input type="checkbox" name="category" value="Gluten-Free"> Gluten-Free</label>
+                        <label>
+                            <input type="checkbox" name="category" value="Vegetarian">
+                            <span class="checkmark"></span>
+                            Vegetarian
+                        </label>
+                        <label>
+                            <input type="checkbox" name="category" value="Vegan">
+                            <span class="checkmark"></span>
+                            Vegan
+                        </label>
+                        <label>
+                            <input type="checkbox" name="category" value="Gluten-Free">
+                            <span class="checkmark"></span>
+                            Gluten-Free
+                        </label>
                     </div>
                 </div>
 
                 <div class="tag-section" id="cuisineContainer">
                     <h3>Cuisine</h3>
-                    <select id="cuisine" name="cuisine" required>
-                        <option value="">Select Cuisine</option>
-                        <option value="Italian">Italian</option>
-                        <option value="Chinese">Chinese</option>
-                        <option value="Indian">Indian</option>
-                        <option value="Mexican">Mexican</option>
-                        <option value="Japanese">Japanese</option>
-                        <option value="French">French</option>
-                        <option value="Thai">Thai</option>
-                        <option value="Mediterranean">Mediterranean</option>
-                        <option value="American">American</option>
-                        <option value="Other">Other</option>
-                    </select>
+                    <div class="custom-select">
+                        <select id="cuisine" name="cuisine" required>
+                            <option value="">Select Cuisine</option>
+                            <option value="Italian">Italian</option>
+                            <option value="Chinese">Chinese</option>
+                            <option value="Indian">Indian</option>
+                            <option value="Mexican">Mexican</option>
+                            <option value="Japanese">Japanese</option>
+                            <option value="French">French</option>
+                            <option value="Thai">Thai</option>
+                            <option value="Mediterranean">Mediterranean</option>
+                            <option value="American">American</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span class="custom-arrow"></span>
+                    </div>
                 </div>
 
                 <div class="tag-section" id="mealTimeContainer">
                     <h3>Meal Time</h3>
                     <div class="checkbox-group">
-                        <label><input type="checkbox" name="mealTime" value="Breakfast"> Breakfast</label>
-                        <label><input type="checkbox" name="mealTime" value="Lunch"> Lunch</label>
-                        <label><input type="checkbox" name="mealTime" value="Dinner"> Dinner</label>
-                        <label><input type="checkbox" name="mealTime" value="Snack"> Snack</label>
+                        <label>
+                            <input type="checkbox" name="mealTime" value="Breakfast">
+                            <span class="checkmark"></span>
+                            Breakfast
+                        </label>
+                        <label>
+                            <input type="checkbox" name="mealTime" value="Lunch">
+                            <span class="checkmark"></span>
+                            Lunch
+                        </label>
+                        <label>
+                            <input type="checkbox" name="mealTime" value="Dinner">
+                            <span class="checkmark"></span>
+                            Dinner
+                        </label>
+                        <label>
+                            <input type="checkbox" name="mealTime" value="Snack">
+                            <span class="checkmark"></span>
+                            Snack
+                        </label>
                     </div>
                 </div>
             </div>

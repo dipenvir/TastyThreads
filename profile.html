@@ -12,13 +12,13 @@
 </head>
 
 <body>
-    
+
     <!-- Top Section -->
     <header class="profile-header">
         <div class="profile-picture">
             <img src="img/pp.webp" alt="Profile Picture" class="circle-image">
         </div>
-        
+
         <div class="user-details">
             <h1 class="username">@neriyel_dipen</h1>
             <p class="name">Neriyel & Dipen</p>
@@ -26,27 +26,35 @@
         </div>
         <div class="user-stats">
             <div class="stat">
-              <span class="stat-number">12</span>
-              <span class="stat-label">Recipes</span>
+                <span class="stat-number">12</span>
+                <span class="stat-label">Recipes</span>
             </div>
             <div class="stat">
-              <span class="stat-number">50</span>
-              <span class="stat-label">Liked Recipes</span>
+                <span class="stat-number">50</span>
+                <span class="stat-label">Liked Recipes</span>
             </div>
             <div class="stat">
-                <span class="stat-number">90</span>
+                <span class="stat-number" id="recipe-count">0</span>
                 <span class="stat-label">Saved Recipes</span>
-              </div>
-          </div>
+            </div>
+        </div>
     </header>
-    <hr class="divider"> 
+    <hr class="divider">
 
     <!-- Bottom Section -->
     <main class="profile-content">
+        <!-- User posts -->
+        <section class="user-posts">
+            <h2>Your Posts</h2>
+            <div class="recipe-grid" id="user-posts-grid">
+                <!-- Users post will load dynamically here -->
+            </div>
+        </section>        
+        <button class="view-all">View All</button>
         <!-- Saved Recipes -->
         <section class="saved-recipes">
             <h2>Saved Recipes</h2>
-            <div class="recipe-grid">
+            <div class="recipe-grid" id="saved-recipes-grid">
                 <div class="recipe-card">
                     <img src="https://via.placeholder.com/150" alt="Recipe 1">
                     <h3>Spicy Pasta</h3>
@@ -62,6 +70,7 @@
                     <h3>Grilled Chicken</h3>
                     <p>Non-veg, 45 mins</p>
                 </div>
+
             </div>
             <button class="view-all">View All</button>
         </section>
@@ -89,6 +98,12 @@
             <button class="view-all">View All</button>
         </section>
     </main>
+
+    <!-- Scripts -->
+    <script src="skeleton.js"></script>
+    <script src="profile.js"></script>
+
+
 </body>
 
 </html>

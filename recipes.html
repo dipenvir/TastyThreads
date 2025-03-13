@@ -4,40 +4,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><!-- Enter title here --></title>
+    <title>Recipe Finder</title>
+    <script src="recipes.js"></script>
     <link rel="stylesheet" href="recipes.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Add a modern font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 </head>
-
 
 <body>
     <!-- NAVIGATION BAR -->
     <header id="navbar"></header>
 
-    <h1>Filtered Recipes</h1>
+    <!-- Hero Section with Background Image -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="page-title animate__animated animate__fadeInDown">Discover Delicious Recipes</h1>
+            <p class="hero-text animate__animated animate__fadeInUp">Explore a world of flavors with our curated collection of recipes.</p>
+        </div>
+    </section>
 
-    <!-- Dropdown filters -->
-    <label for="category">Category:</label>
-    <select id="category" onchange="updateFilters()">
-        <option value="">All</option>
-    </select>
+    <main class="container">
+        <!-- Filter Section -->
+        <section class="filters">
+            <div class="filter-group">
+                <label for="category">Category:</label>
+                <select id="category" onchange="updateFilters()">
+                    <option value="">All</option>
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
 
-    <label for="cuisine">Cuisine:</label>
-    <select id="cuisine" onchange="updateFilters()">
-        <option value="">All</option>
-    </select>
+            <div class="filter-group">
+                <label for="cuisine">Cuisine:</label>
+                <select id="cuisine" onchange="updateFilters()">
+                    <option value="">All</option>
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
 
-    <label for="meal_time">Meal Time:</label>
-    <select id="meal_time" onchange="updateFilters()">
-        <option value="">All</option>
-    </select>
+            <div class="filter-group">
+                <label for="meal_time">Meal Time:</label>
+                <select id="meal_time" onchange="updateFilters()">
+                    <option value="">All</option>
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+        </section>
 
-    <hr>
+        <hr class="divider">
 
-    <!-- Recipes Display -->
-    <div id="recipe-list"></div>
+        <!-- Recipes Display Section -->
+        <section id="recipe-list" class="recipe-grid">
+            <!-- Recipe cards will be dynamically inserted here -->
+        </section>
+    </main>
 
-    <script src="recipes.js"></script>
+  
     <script src="skeleton.js"></script>
 </body>
 

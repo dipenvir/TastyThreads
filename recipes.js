@@ -48,15 +48,21 @@ async function fetchRecipes() {
 
 
 
-            return `
-                <div>
-                    <h2>${recipe.title}</h2>
-                    <img src="${imageSrc}" alt="${recipe.title}" style="width:200px;">
-                    <p><strong>Category:</strong> ${recipe.tags?.category || "N/A"}</p>
-                    <p><strong>Cuisine:</strong> ${recipe.tags?.cuisine || "N/A"}</p>
-                    <p><strong>Meal Time:</strong> ${recipe.tags?.meal_time || "N/A"}</p>
-                    <p><strong>Ingredients:</strong> ${recipe.ingredients?.join(", ") || "N/A"}</p>
-                    <p><strong>Instructions:</strong> ${recipe.instructions || "N/A"}</p>
+            return `            
+                <div class="recipe-card">
+                    
+                    <img src="${imageSrc}" alt="${recipe.title}"">
+                    <div class="recipe-details">
+                    <h4>${recipe.title}</h4>
+                    <p><strong>Category: </strong> ${recipe.tags?.category || "N/A"}</p>
+                    <p><strong>Cuisine: </strong> ${recipe.tags?.cuisine || "N/A"}</p>
+                    <p><strong>Instructions: </strong> ${recipe.instructions || "N/A"}</p>
+                     <button>Continue Reading</button>
+                     </div>
+                    <div class="recipe-info">
+                        <p><strong>Meal Time: &nbsp;</strong> ${recipe.tags?.meal_time || "N/A"}</p>
+                    <p><strong>Ingredients: &nbsp;</strong> ${recipe.ingredients?.join(", ") || "N/A"}</p>
+                    </div>
                 </div>
             `;
         }).join("");

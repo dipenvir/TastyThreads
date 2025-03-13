@@ -46,6 +46,9 @@ async function fetchRecipes() {
         <img src="${imageSrc}" alt="${recipe.title}">
         <h3>${recipe.title}</h3>
         <p>${formatTags(recipe.tags)}, ${recipe.time || 'Unknown time'}</p>
+        <a href="recipe.html">
+                    <button>Continue Reading</button>
+                    </a>
     `;
 
             recipeGrid.appendChild(recipeCard);

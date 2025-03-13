@@ -56,8 +56,10 @@ async function fetchRecipes() {
                     <h4>${recipe.title}</h4>
                     <p><strong>Category: </strong> ${recipe.tags?.category || "N/A"}</p>
                     <p><strong>Cuisine: </strong> ${recipe.tags?.cuisine || "N/A"}</p>
-                    <p><strong>Instructions: </strong> ${recipe.instructions || "N/A"}</p>
-                     <button>Continue Reading</button>
+                    <p class= "truncated-text"><strong>Instructions: </strong> ${recipe.instructions || "N/A"}</p>
+                    <a href="recipe.html">
+                    <button>Continue Reading</button>
+                    <a/>
                      </div>
                     <div class="recipe-info">
                         <p><strong>Meal Time: &nbsp;</strong> ${recipe.tags?.meal_time || "N/A"}</p>

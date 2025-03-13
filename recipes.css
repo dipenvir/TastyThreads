@@ -254,3 +254,10 @@ body {
         font-size: 1rem;
     }
 }
+.truncated-text {
+    display: block;
+    width: 800px; /* Adjust as needed */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

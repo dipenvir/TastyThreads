@@ -5,8 +5,6 @@ body {
     padding: 0;
     background: #f9f9f9;
     color: #333;
-    /* display: flex;
-    justify-content: center; */
     align-items: center;
     min-height: 100vh;
     background: url('img/bgg2.jpg') no-repeat center center/cover;
@@ -413,3 +411,4 @@ button:active {
     background: #e74c3c;
     color: white;
 }
+

@@ -44,7 +44,7 @@ const client = new MongoClient(uri);
 
 // Our databases as global variables (use these for better readability)
 let usersCollection;
-let recipiesCollection;
+let recipesCollection;
 
 async function startApp() {
   try {
@@ -55,7 +55,7 @@ async function startApp() {
     // Access the database and collection
     const database = client.db("TastyThreadsDB");
     usersCollection = database.collection("users");
-    recipiesCollection = database.collection("recipies");
+    recipesCollection = database.collection("recipes");
     console.log("Database Ready:", database.databaseName);
 
     // Example: Find all users
@@ -251,9 +251,9 @@ app.post("/loggingin", async (req, res) => {
 app.get("/tags", async (req, res) => {
   try {
     // Fetch distinct tags for each category
-    const categories = await recipiesCollection.distinct("tags.category");
-    const cuisines = await recipiesCollection.distinct("tags.cuisine");
-    const meal_times = await recipiesCollection.distinct("tags.meal_time");
+    const categories = await recipesCollection.distinct("tags.category");
+    const cuisines = await recipesCollection.distinct("tags.cuisine");
+    const meal_times = await recipesCollection.distinct("tags.meal_time");
 
     // Send structured tag data
     res.json({
@@ -287,34 +287,94 @@ app.post("/posting", upload.single("image"), async (req, res) => {
   try {
     const user = req.session.email;
     const { title, ingredients, instructions, category, cuisine, meal_time } = req.body;
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null; // Assuming local storage
 
     console.log("Tags should appear here:", { category, cuisine, meal_time });
 
-    // I've made the tags an object for easier querying later
     const newRecipe = {
       user,
       title,
-      image: imageUrl,
-      ingredients: ingredients.split(","),  // Convert CSV to array via split fxn
+      image: req.file
+        ? {
+          name: req.file.originalname,
+          data: req.file.buffer, // Store raw binary image data
+          mimetype: req.file.mimetype, // Store the image type (e.g., "image/png")
+        }
+        : null, // If no image is uploaded, store `null`
+      ingredients: ingredients.split(","), // Convert CSV string into an array
       instructions,
       tags: {
-        category: category || null,         // Example: "Dessert", "Main Course"
-        cuisine: cuisine || null,           // Example: "Italian", "Mexican"
-        meal_time: meal_time || null        // Example: "Breakfast", "Dinner"
+        category: category || null,
+        cuisine: cuisine || null,
+        meal_time: meal_time || null,
       },
       createdAt: new Date(),
     };
 
-    const result = await recipiesCollection.insertOne(newRecipe);
+    const result = await recipesCollection.insertOne(newRecipe);
 
     res.json({ message: "Recipe added successfully!", recipeId: result.insertedId });
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error adding recipe:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+// RECIPES PAGE
+app.get("/recipes", async (req, res) => {
+  try {
+    const { category, cuisine, meal_time } = req.query;
+
+    let filter = [];
+
+    if (category) filter.push({ "tags.category": category });
+    if (cuisine) filter.push({ "tags.cuisine": cuisine });
+    if (meal_time) filter.push({ "tags.meal_time": meal_time });
+
+    // Apply filtering only if there are conditions
+    const query = filter.length > 0 ? { $and: filter } : {};
+
+    const recipes = await recipesCollection.find(query).toArray();
+    res.json(recipes);
+  }
+  catch (error) {
+    console.error("Error fetching recipes:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// I think I can just reuse the app.get("/getTags") api route 
+app.get("/getFilters", async (req, res) => {
+  try {
+    const categories = await recipesCollection.distinct("tags.category");
+    const cuisines = await recipesCollection.distinct("tags.cuisine");
+    const meal_times = await recipesCollection.distinct("tags.meal_time");
+
+    res.json({ categories, cuisines, meal_times });
+  } catch (error) {
+    console.error("Error fetching filters:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// FETCHES THE IMAGE BY RECIPE ID
+app.get("/image/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const recipe = await recipesCollection.findOne({ _id: new ObjectId(id) });
+
+    if (!recipe || !recipe.image) {
+      return res.status(404).json({ error: "Image not found" });
+    }
+
+    res.set("Content-Type", recipe.image.mimetype);
+    res.send(recipe.image.data);
+  } catch (error) {
+    console.error("Error fetching image:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 
 // Protect routes middleware

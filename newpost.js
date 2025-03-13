@@ -13,8 +13,6 @@
 //   }
 // });
 
-
-
 async function fetchTags() {
   const response = await fetch("/tags");
   const data = await response.json();
@@ -26,11 +24,13 @@ async function fetchTags() {
     categoryContainer.appendChild(checkbox);
   });
 
-  // Populate Cuisine checkboxes
-  const cuisineContainer = document.getElementById("cuisineContainer");
+  // Populate Cuisine dropdown
+  const cuisineDropdown = document.getElementById("cuisine");
   data.availableTags.cuisines.forEach(tag => {
-    const checkbox = createCheckbox("cuisine", tag);
-    cuisineContainer.appendChild(checkbox);
+    const option = document.createElement("option");
+    option.value = tag;
+    option.textContent = tag;
+    cuisineDropdown.appendChild(option);
   });
 
   // Populate Meal Time checkboxes
@@ -43,22 +43,23 @@ async function fetchTags() {
 
 // Function to create a checkbox dynamically
 function createCheckbox(name, value) {
-  const div = document.createElement("div");
+  const label = document.createElement("label");
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
   checkbox.name = name;
   checkbox.value = value;
 
-  const label = document.createElement("label");
-  label.textContent = value;
+  const span = document.createElement("span");
+  span.className = "checkmark";
 
-  div.appendChild(checkbox);
-  div.appendChild(label);
-  return div;
+  label.appendChild(checkbox);
+  label.appendChild(span);
+  label.appendChild(document.createTextNode(value));
+
+  return label;
 }
 
 fetchTags();
-
 
 // Collects the user-selected category, cuisine, and meal_time values
 document.getElementById("recipeForm").addEventListener("submit", function (event) {

@@ -108,27 +108,32 @@ button:active {
     font-weight: 600;
 }
 
-.checkbox-group {
+#mealTimeContainer {
+    display: flex;
+    flex-wrap: wrap;
+    /* gap: 2vh; */
+    justify-content: center; /* Center checkboxes horizontally */
+
+}
+
+#mealTimeContainer {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    justify-content: center; /* Center checkboxes horizontally */
-    gap: 15px; /* Space between checkboxes */
+    justify-content: center;
 }
 
-/* Custom Checkbox Styling */
-.checkbox-group label {
+#mealTimeContainer label {
     position: relative;
     padding-left: 30px;
     cursor: pointer;
     font-size: 0.9rem;
-    color: #555;
     display: flex;
     align-items: center;
-    gap: 10px;
+  
 }
 
-.checkbox-group input[type="checkbox"] {
+#mealTimeContainer input[type="checkbox"] {
     position: absolute;
     opacity: 0;
     cursor: pointer;
@@ -136,7 +141,7 @@ button:active {
     width: 0;
 }
 
-.checkbox-group .checkmark {
+#mealTimeContainer .checkmark {
     position: absolute;
     left: 0;
     top: 50%;
@@ -149,12 +154,12 @@ button:active {
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.checkbox-group input[type="checkbox"]:checked ~ .checkmark {
+#mealTimeContainer input[type="checkbox"]:checked ~ .checkmark {
     background-color: #e74c3c;
     border-color: #e74c3c;
 }
 
-.checkbox-group .checkmark:after {
+#mealTimeContainer .checkmark:after {
     content: "";
     position: absolute;
     display: none;
@@ -167,10 +172,76 @@ button:active {
     transform: rotate(45deg);
 }
 
-.checkbox-group input[type="checkbox"]:checked ~ .checkmark:after {
+#mealTimeContainer input[type="checkbox"]:checked ~ .checkmark:after {
     display: block;
 }
+#categoryContainer {
+    display: flex;
+    flex-wrap: wrap;
+    /* gap: 2vh; */
+    justify-content: center; /* Center checkboxes horizontally */
 
+}
+
+#categoryContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+#categoryContainer label {
+    position: relative;
+    padding-left: 30px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+  
+}
+
+#categoryContainer input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+#categoryContainer .checkmark {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 18px;
+    width: 18px;
+    background-color: #fff;
+    border: 2px solid #e74c3c;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+#categoryContainer input[type="checkbox"]:checked ~ .checkmark {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+#categoryContainer .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 5px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+#categoryContainer input[type="checkbox"]:checked ~ .checkmark:after {
+    display: block;
+}
 /* Custom File Input Styling */
 .form-group input[type="file"] {
     padding: 0.5rem;
@@ -206,39 +277,48 @@ button:active {
     background: #c0392b;
 }
 
-/* Custom Select Dropdown Styling */
-.form-group select {
+.custom-select {
+    position: relative;
+    width: 100%;
+}
+
+.custom-select select {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background: url('data:image/svg+xml;utf8,<svg fill="%23e74c3c" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 0.75rem center/12px 12px;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding-right: 2.5rem;
-    cursor: pointer;
+    width: 100%;
+    padding: 0.75rem;
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 1rem;
+    background: rgba(255, 255, 255, 0.8);
     color: #555;
+    cursor: pointer;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.form-group select:focus {
+.custom-select select:focus {
     border-color: #e74c3c;
     box-shadow: 0 0 8px rgba(231, 76, 60, 0.2);
     outline: none;
 }
 
-/* Custom Select Dropdown Options */
-.form-group select option {
-    background: #fff;
-    color: #333;
-    padding: 0.5rem;
+.custom-arrow {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #e74c3c;
+    pointer-events: none;
+    transition: transform 0.3s ease;
 }
 
-/* Hover Effect for Dropdown Options */
-.form-group select option:hover {
-    background: #e74c3c;
-    color: white;
+.custom-select select:focus ~ .custom-arrow {
+    transform: translateY(-50%) rotate(180deg);
 }
 
 /* Responsive Design */

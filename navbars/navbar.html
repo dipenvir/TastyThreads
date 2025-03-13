@@ -1,25 +1,24 @@
 <header>
-    <!-- <img src="img/logo.png" style="height: 80px;" alt="Logo"> -->
-    <nav>
-        <ul>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Gallery</a></li>
-            <li><a href="#">Our Team</a></li>
+    <nav class="navbar">
+    <div class="navbar-container">
+        <!-- Logo -->
+        <a href="/home" class="navbar-logo">
+            <img src="img/logo.png" alt="Tasty Threads Logo">
+         
+        </a>
+
+        <!-- Navigation Links -->
+        <ul class="navbar-menu">
+            <li><a href="/home">Home</a></li>
+            <li><a href="profile.html">Profile</a></li>
+            <li><a href="/recipes.html">All Recipes</a></li>
+            <li><a href="/newPost">New Post</a></li>
         </ul>
-    </nav>
-    <a href="/home">
-        <button id="home">HOME</button>
-    </a>
-    <a href="/profile">
-        <button id="profile">VIEW PROFILE</button>
-    </a>
-    <a href="/logout">
-        <button id="logout">LOGOUT</button>
-    </a>
-    <a href="/recipes.html">
-        <button id="recipes-button">RECIPES</button>
-    </a>
-    <a href="/newPost">
-        <button id="new-post">NEW POST</button>
-    </a>
+
+        <!-- Log Out Button -->
+        <div class="navbar-actions">
+            <a href="/logout" id="logout"class="logout-button">Log Out</a>
+        </div>
+    </div>
+</nav>
 </header>

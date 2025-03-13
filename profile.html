@@ -6,19 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tasty Threads - Profile</title>
     <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="navbars\navbar.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Playfair+Display:wght@700&display=swap"
         rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
-    
+    <!-- NAVIGATION BAR -->
+    <header id="navbar"> </header>
+
     <!-- Top Section -->
-    <header class="profile-header">
+    <section class="profile-header">
+
         <div class="profile-picture">
             <img src="img/pp.webp" alt="Profile Picture" class="circle-image">
         </div>
-        
+
         <div class="user-details">
             <h1 class="username">@neriyel_dipen</h1>
             <p class="name">Neriyel & Dipen</p>
@@ -26,20 +31,20 @@
         </div>
         <div class="user-stats">
             <div class="stat">
-              <span class="stat-number">12</span>
-              <span class="stat-label">Recipes</span>
+                <span class="stat-number">12</span>
+                <span class="stat-label">Recipes</span>
             </div>
             <div class="stat">
-              <span class="stat-number">50</span>
-              <span class="stat-label">Liked Recipes</span>
+                <span class="stat-number">50</span>
+                <span class="stat-label">Liked Recipes</span>
             </div>
             <div class="stat">
                 <span class="stat-number">90</span>
                 <span class="stat-label">Saved Recipes</span>
-              </div>
-          </div>
-    </header>
-    <hr class="divider"> 
+            </div>
+        </div>
+    </section>
+    <hr class="divider">
 
     <!-- Bottom Section -->
     <main class="profile-content">
@@ -89,6 +94,7 @@
             <button class="view-all">View All</button>
         </section>
     </main>
+    <script src="skeleton.js"></script>
 </body>
 
 </html>

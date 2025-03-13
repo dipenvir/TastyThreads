@@ -1,3 +1,8 @@
+// // Recipes button
+// document.getElementById("recipes-button").addEventListener("click", () => {
+//     window.location.href = "/recipes.html";
+// });
+
 document.addEventListener("DOMContentLoaded", async () => {
     await fetchRecipes();  // Load recipes initially
     await populateFilters();  // Populate dropdowns

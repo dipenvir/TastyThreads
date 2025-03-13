@@ -1,0 +1,65 @@
+@font-face {
+    font-family: kanit;
+    src: url(font/Oswald-VariableFont_wght.ttf);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #F1F8E9;
+    /* Light minty green background */
+    box-sizing: border-box;
+    overflow-x: hidden;
+    font-family: 'Kanit', sans-serif;
+    color: #333;
+}
+
+header {
+    width: 100vw;
+    height: 12%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    position: fixed;
+}
+
+nav li {
+    display: inline-block;
+    list-style: none;
+    padding: 0vh 1.5vw;
+}
+
+nav a {
+    text-decoration: none;
+    color: #fff;
+    font-family: kanit;
+    font-size: x-large;
+}
+
+nav a:hover {
+    color: #FFA836;
+    transition: all 0.4s ease 0s;
+}
+
+#login:hover {
+    background-color: #FFA836;
+    transition: all 0.4s ease 0s;
+}
+
+header img {
+    margin-left: 5%;
+}
+
+#login {
+    font-size: 20px;
+    font-weight: 500;
+    color: white;
+    text-decoration: none;
+    background: rgba(0, 0, 0, 0.2);
+    border: #FFA836 solid 2px;
+    border-radius: 50px;
+    padding: 8px 30px;
+    margin-right: 3%;
+    font-family: kanit;
+}

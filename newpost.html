@@ -26,6 +26,7 @@
 
     <div class="container">
         <h1>Create a Recipe</h1>
+
         <form action="/posting" method="post" id="recipeForm" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="title">Title</label>
@@ -74,15 +75,21 @@
                 <label for="image">Image</label>
                 <input type="file" id="image" name="image" accept="image/*">
             </div>
-            <a href="/home">
+
             <button type="submit">Post Recipe</button>
-        </a>
+
+            <!-- Confirmation Message -->
+            <div id="confirmationMessage" class="confirmation-message" style="display: none;">
+                Your recipe has been successfully posted!
+            </div>
         </form>
+
     </div>
 
     <!-- Scripts -->
     <script src="skeleton.js"></script>
     <script src="newpost.js"></script>
+
 </body>
 
 </html>

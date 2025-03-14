@@ -1,18 +1,30 @@
-// // Route to get recipes by using the tags (add this to app.js later)
+// Function to display a confirmation message
+function showConfirmationMessage() {
+  // Check if the message already exists
+  let confirmationMessage = document.getElementById("confirmationMessage");
 
-// app.get("/recipes", async (req, res) => {
-//   try {
-//     const tag = req.query.tag;
-//     const query = tag ? { tags: tag } : {}; // Find recipes that match the tag
-//     const recipes = await database.db(mongodb_database).collection("recipes").find(query).toArray();
+  // If it doesn't exist, create it
+  if (!confirmationMessage) {
+    confirmationMessage = document.createElement("div");
+    confirmationMessage.id = "confirmationMessage";
+    confirmationMessage.className = "confirmation-message";
+    confirmationMessage.textContent = "Your recipe has been successfully posted!";
 
-//     res.json(recipes);
-//   } catch (error) {
-//     console.error("Error fetching recipes:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
+    // Insert the message above the form
+    const form = document.getElementById("recipeForm");
+    form.parentNode.insertBefore(confirmationMessage, form);
+  }
 
+  // Show the message
+  confirmationMessage.style.display = "block";
+
+  // Optionally, hide the message after a few seconds
+  setTimeout(() => {
+    confirmationMessage.style.display = "none";
+  }, 5000); // Hide after 5 seconds
+}
+
+// Fetch tags and populate the form
 async function fetchTags() {
   const response = await fetch("/tags");
   const data = await response.json();
@@ -59,9 +71,10 @@ function createCheckbox(name, value) {
   return label;
 }
 
+// Fetch tags when the page loads
 fetchTags();
 
-// Collects the user-selected category, cuisine, and meal_time values
+// Handle form submission
 document.getElementById("recipeForm").addEventListener("submit", function (event) {
   event.preventDefault();
 
@@ -72,10 +85,16 @@ document.getElementById("recipeForm").addEventListener("submit", function (event
     method: "POST",
     body: formData
   })
-    .then(response => response.json())
-    .then(data => {
-      console.log("Recipe submitted:", data);
-      // Optionally handle success
+    .then(response => {
+      if (response.ok) {
+        // If the server responds with a success status, show the confirmation message
+        showConfirmationMessage();
+
+        // Reset the form
+        this.reset();
+      } else {
+        console.error("Form submission failed");
+      }
     })
     .catch(error => {
       console.error("Error:", error);

@@ -412,3 +412,12 @@ button:active {
     color: white;
 }
 
+.confirmation-message {
+    background-color: #d4edda; /* Light green background */
+    color: #155724; /* Dark green text */
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-align: center;
+    display: block; /* Ensure the message is visible */
+  }

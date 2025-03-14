@@ -292,7 +292,7 @@ app.get("/newPost", sessionValidation, (req, res) => {
 app.post("/posting", upload.single("image"), async (req, res) => {
   try {
     const user = req.session.email;
-    const { title, ingredients, instructions, category, cuisine, meal_time } = req.body;
+    const { title, ingredients, instructions, category, cuisine, meal_time, cooking_time } = req.body;
 
     console.log("Tags should appear here:", { category, cuisine, meal_time });
 
@@ -313,6 +313,7 @@ app.post("/posting", upload.single("image"), async (req, res) => {
         cuisine: cuisine || null,
         meal_time: meal_time || null,
       },
+      cooking_time,
       createdAt: new Date(),
     };
 
@@ -404,6 +405,19 @@ app.get("/api/profile-recipes", async (req, res) => {
   }
 });
 
+// RECIPE PAGE (individual recipes, not the whole recipe page)
+app.get("/recipe/:id", async (req, res) => {
+  try {
+    const recipe = await recipesCollection.findById(req.params.id);
+    if (!recipe) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+    res.json(recipe);
+  } catch (error) {
+    console.error("Error fetching recipe:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 
 // Protect routes middleware

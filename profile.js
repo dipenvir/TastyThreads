@@ -1,3 +1,19 @@
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const response = await fetch("/getUser");
+        const data = await response.json();
+        if (data.username != null) {
+            document.getElementById("username").textContent = data.username;
+        }
+        if (data.email != null) {
+            document.getElementById("email").textContent = data.email;
+        }
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+    }
+});
+
+// FETCHING USER'S POSTED RECIPES
 function formatTags(tag) {
     if (!tag || typeof tag !== 'object') return '';
 
@@ -50,6 +66,12 @@ async function fetchRecipes() {
                     <button>Continue Reading</button>
                     </a>
     `;
+
+            recipeCard.addEventListener("click", () => {
+                // Assuming recipe.id is the unique ID of the recipe
+                const recipeId = recipe._id;
+                window.location.href = `recipe.html?id=${recipeId}`;
+            });
 
             recipeGrid.appendChild(recipeCard);
         });

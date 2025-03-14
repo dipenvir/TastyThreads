@@ -122,7 +122,7 @@ body {
 
 .recipe-card {
     display: flex;
-    align-items:center;
+    align-items: center;
     background-color: white;
     border-radius: 10px;
     overflow: hidden;
@@ -253,11 +253,4 @@ body {
     .hero-text {
         font-size: 1rem;
     }
-}
-.truncated-text {
-    display: block;
-    width: 800px; /* Adjust as needed */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }

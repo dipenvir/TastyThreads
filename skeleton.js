@@ -1,27 +1,47 @@
 /**
- * Loads the navbar onto each page
+ * Loads the navbar onto each page based on Cognito authentication status
  */
-
-
 function loadSkeleton() {
   console.log("inside skeleton");
-  console.log("this should show function: " + typeof $); // debugging Should print 'function' if jQuery is loaded
+  console.log("this should show function: " + typeof AmazonCognitoIdentity); // debugging, should print 'object' if Cognito is loaded
 
+  // Get the current user from Cognito
+  const cognitoUser = userPool.getCurrentUser();
 
-  return fetch("/auth/status")
-    .then((res) => {
-      console.log("inside skeleton's fetch", res); // Debugging line
-      return res.json();
-    })
-    .then((data) => {
-      console.log("Auth status data:", data); // Debugging line
-      if (data.isAuthenticated) {
-        $("#navbar").load("navbars/navbar.html");
+  if (cognitoUser != null) {
+    // If a user is logged in, fetch user info and load the appropriate navbar
+    cognitoUser.getSession((err, session) => {
+      if (err) {
+        console.error("Error getting session:", err);
+        loadNavbarBeforeLogin(); // In case of error, assume the user is not logged in
       } else {
-        $("#navbar").load("./navbars/nav-before-login.html");
+        console.log("User is authenticated:", session.isValid());
+        if (session.isValid()) {
+          loadNavbarAfterLogin();
+        } else {
+          loadNavbarBeforeLogin();
+        }
       }
-    })
-    .catch((error) => console.error("Error checking auth status:", error));
+    });
+  } else {
+    loadNavbarBeforeLogin(); // If no user is logged in, load navbar for non-authenticated users
+  }
+}
+
+/**
+ * Loads the navbar for authenticated users
+ */
+function loadNavbarAfterLogin() {
+  console.log("User is authenticated, loading the navbar AFTER login.");
+  $("#navbar").load("navbars/navbar.html");
+}
+
+/**
+ * Loads the navbar for users who are not authenticated
+ */
+function loadNavbarBeforeLogin() {
+  console.log("User is not authenticated, loading the navbar BEFORE login.");
+  $("#navbar").load("./navbars/nav-before-login.html");
 }
 
 loadSkeleton();

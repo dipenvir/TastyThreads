@@ -1,272 +1,159 @@
 // IMPORTS
 const express = require("express");
 const app = express();
-const $ = require("jquery");
 const path = require("path");
+const multer = require("multer");
+const AWS = require("aws-sdk");
+const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
+const jwt = require('jsonwebtoken');
+const userPool = require('./cognitoConfigBackend'); // Import userPool from the cognito module
+const { v4: uuidv4 } = require('uuid');
+require("dotenv").config();
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 app.use(express.urlencoded({ extended: true }));
-const { resourceUsage } = require("process");
 
-// MongoDB imports
-const MongoStore = require("connect-mongo");
-const mongodb = require("mongodb");
-
-// Sessions, password hashing, JOI validations imports
-const session = require("express-session");
-const bcrypt = require("bcryptjs");
-const Joi = require("joi");
-
-// Uploading images imports
-const multer = require("multer");
+// AWS CONFIGURATION
+AWS.config.update({ region: process.env.AWS_REGION });
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
+const cognito = new AWS.CognitoIdentityServiceProvider();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// env variables
-require("dotenv").config();
-const mongodb_host = process.env.MONGODB_HOST;
-const mongodb_user = process.env.MONGODB_USER;
-const mongodb_password = process.env.MONGODB_PASSWORD;
-const mongodb_database = process.env.MONGODB_DATABASE;
-const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
-const node_session_secret = process.env.NODE_SESSION_SECRET;
+// ENV VARIABLES
+const recipesTable = process.env.DYNAMODB_RECIPES_TABLE;
 
-// Salt rounds for hashing
-const saltRounds = 12;
-const expireTime = 23 * 60 * 60 * 1000;
+// // AWS SDK imports
+// const { DynamoDBClient, PutItemCommand, GetItemCommand, UpdateItemCommand, QueryCommand } = require("@aws-sdk/client-dynamodb");
+// const { unmarshall } = require("@aws-sdk/util-dynamodb");
 
-// CONNECTING TO MONGODB DATABASE
-// var { database } = require("./databaseConnection"); <-- later can add to database connection module
 
-const { MongoClient } = require("mongodb");
-const uri = `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_database}?retryWrites=true&w=majority`;
-const client = new MongoClient(uri);
-
-// Our databases as global variables (use these for better readability)
-let usersCollection;
-let recipesCollection;
-
-async function startApp() {
-  try {
-    // Connect to the database
-    await client.connect();
-    console.log("✅ MongoDB Connected Successfully!");
-
-    // Access the database and collection
-    const database = client.db("TastyThreadsDB");
-    usersCollection = database.collection("users");
-    recipesCollection = database.collection("recipes");
-    console.log("Database Ready:", database.databaseName);
-
-    // Example: Find all users
-    const users = await usersCollection.find({}).toArray();
-  } catch (err) {
-    console.error("❌ MongoDB Connection Error:", err);
-  }
-}
-
-// CREATING MONGO STORE
-var mongoStore = MongoStore.create({
-  mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/sessions`,
-  crypto: {
-    secret: mongodb_session_secret
-  }
-})
-
-startApp();
-
-// Session Middleware
-app.use(
-  session({
-    secret: node_session_secret,
-    store: mongoStore,
-    saveUninitialized: false,
-    resave: true
-  })
-)
-
-// Returns true if user is in a valid session, otherwise false
-function isValidSession(req) {
-  if (req.session.authenticated) {
-    return true;
-  }
-  return false;
-}
-
-// Middleware for validating a session
-function sessionValidation(req, res, next) {
-  if (isValidSession(req)) {
-    next();
-  } else {
-    res.redirect("/login");
-  }
-}
-
-// Route to check authenticated status (logged in vs out)
-app.get("/auth/status", (req, res) => {
-  res.json({ isAuthenticated: isValidSession(req), user: req.session.username || null });
-});
-
-// LANDING PAGE
+// TODO RAFACTOR LANDING PAGE
 app.get("/", async (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"))
 }
 )
 
-// HOME PAGE
+// TODO RAFACTOR HOME PAGE
 app.get("/home", async (req, res) => {
   res.sendFile(path.join(__dirname, "home.html"))
 })
 
-// GET USERNAME API (Populates the user's username in home page)
-app.get("/getUser", async (req, res) => {
-  if (req.session.authenticated) {
-    res.json({
-      username: req.session.username,
-      email: req.session.email
-    });
-  } else {
-    res.json({
-      username: null,
-      email: null
-    });
-  }
+// TODO RAFACTOR GET USERNAME API (Populates the user's username in home page)
+// app.get("/getUser", async (req, res) => {
+//   if (req.session.authenticated) {
+//     res.json({
+//       username: req.session.username,
+//       email: req.session.email
+//     });
+//   } else {
+//     res.json({
+//       username: null,
+//       email: null
+//     });
+//   }
+// });
+
+// TODO LOGOUT (Clears session token on frontend)
+app.get("/logout", (req, res) => {
+  res.json({ message: "Logout successful" });
 });
 
-// LOGOUT
-app.get("/logout", (req, res) => {
-  req.session.destroy();
-  res.redirect("/");
-})
 
-
-// LOGIN PAGE
+// TODO RAFACTOR LOGIN PAGE
 app.get("/login", async (req, res) => {
   res.sendFile(path.join(__dirname, "login.html"))
 })
 
 // Register user
 app.post("/registerUser", async (req, res) => {
-
-  console.log("Inside registerUser:", req.body);
-
-  // req variables
-  var username = req.body.username;
-  var email = req.body.email;
-  var password = req.body.password;
-
-  // Schema for JOI validation
-  const schema = Joi.object({
-    username: Joi.string().max(40).required(),
-    email: Joi.string().email().max(255).required(),
-    password: Joi.string().max(20).required()
-  })
-  // Validate input
-  const validationResult = schema.validate({ username, email, password });
-  if (validationResult.error) {
-    return res.status(400).send(validationResult.error.details[0].message);
-  }
-
+  const { username, email, password } = req.body;
   try {
-    var hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    // Insert new (validated) user to the database!
-    await usersCollection.insertOne({
-      username: username,
-      email: email,
-      password: hashedPassword
-    });
-
-    // Query for the user
-    const result = await usersCollection
-      .find({ email: email })
-      .project({ email: 1, password: 1, username: 1 })
-      .toArray();
-    // Update the session and send user to home page
-    req.session.authenticated = true;
-    req.session.username = result[0].username;
-    req.session.email = result[0].email;
-    req.session.cookie.maxAge = expireTime;
-
-    console.log("Successfully created user... redirecting to home page")
-
-    // Response
-    res.json({ redirect: "/home" });
-
-  } catch (err) {
-    console.error("Error inserting user: ", err);
-    res.status(500).send("Error registering user");
+    const params = {
+      ClientId: clientId,
+      Username: email,
+      Password: password,
+      UserAttributes: [
+        { Name: "email", Value: email },
+        { Name: "custom:username", Value: username }
+      ],
+    };
+    await cognito.signUp(params).promise();
+    res.json({ message: "User registered successfully! Please confirm your email." });
+  } catch (error) {
+    console.error("Error registering user:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
 
-// LOGIN PAGE
-app.get("/login", async (req, res) => {
-  res.sendFile(path.join(__dirname, "login2.html"))
-});
-
-// LOGIN AUTHENTICATION
+// LOGIN (COGNITO AUTHENTICATION)
 app.post("/loggingin", async (req, res) => {
-  var email = req.body.email;
-  var password = req.body.password;
-
-  //email format with 255 max char, and passowrd with 20 max char
-  const schema = Joi.object({
-    email: Joi.string().email().max(255).required(),
-    password: Joi.string().max(20).required(),
-  });
-
-  const validationResult = schema.validate({ email, password });
-
-  if (validationResult.error != null) {
-    return res.json({ message: "Invalid email or password." });
-  }
-
-  // Check if user exists
-  const result = await usersCollection
-    .find({ email: email })
-    .project({ email: 1, password: 1, _id: 1, username: 1 })
-    .toArray();
-
-  if (result.length === 0) {
-    return res.json({ message: "User does not exist." });
-  }
-
-  if (result.length > 1) {
-    console.log("Multiple email accounts using the same email.");
-    return res.json({ message: "Multiple accounts found. Contact support." });
-  }
-
-  if (await bcrypt.compare(password, result[0].password)) {
-    req.session.authenticated = true;
-    req.session.username = result[0].username;
-    req.session.email = email;
-    req.session.cookie.maxAge = expireTime;
-
-    // Response
-    console.log("logged in successfully")
-    return res.json({ redirect: "/home" });
-
-  }
-  else {
-    return res.json({ message: "Incorrect password." });
+  const { email, password } = req.body;
+  try {
+    const params = {
+      AuthFlow: "USER_PASSWORD_AUTH",
+      ClientId: clientId,
+      AuthParameters: {
+        USERNAME: email,
+        PASSWORD: password,
+      },
+    };
+    const authResult = await cognito.initiateAuth(params).promise();
+    res.json({ message: "Login successful", token: authResult.AuthenticationResult.IdToken });
+  } catch (error) {
+    console.error("Error logging in:", error);
+    res.status(401).json({ error: "Invalid credentials" });
   }
 });
 
-// CREATING A NEW POST PAGE
+// TODO REFACTOR CREATING A NEW POST PAGE
 app.get("/tags", async (req, res) => {
   try {
-    // Fetch distinct tags for each category
-    const categories = await recipesCollection.distinct("tags.category");
-    const cuisines = await recipesCollection.distinct("tags.cuisine");
-    const meal_times = await recipesCollection.distinct("tags.meal_time");
+    // Scan the entire table to extract unique tags
+    const params = {
+      TableName: recipesTable,
+      // Only fetch the tags attribute to minimize data transfer
+      ProjectionExpression: 'tags.category, tags.cuisine, tags.meal_time'
+    };
+
+    const result = await dynamoDB.scan(params).promise();
+
+    // Extract unique tags
+    const categories = new Set();
+    const cuisines = new Set();
+    const meal_times = new Set();
+
+    result.Items.forEach(item => {
+      // Handle categories (could be array or single value)
+      if (item.tags?.category) {
+        const categoriesToAdd = Array.isArray(item.tags.category)
+          ? item.tags.category
+          : [item.tags.category];
+        categoriesToAdd.forEach(cat => categories.add(cat));
+      }
+
+      // Handle cuisine
+      if (item.tags?.cuisine) {
+        cuisines.add(item.tags.cuisine);
+      }
+
+      // Handle meal times (could be array or single value)
+      if (item.tags?.meal_time) {
+        const mealTimesToAdd = Array.isArray(item.tags.meal_time)
+          ? item.tags.meal_time
+          : [item.tags.meal_time];
+        mealTimesToAdd.forEach(mt => meal_times.add(mt));
+      }
+    });
 
     // Send structured tag data
     res.json({
       availableTags: {
-        categories,
-        cuisines,
-        meal_times
+        categories: Array.from(categories).sort(),
+        cuisines: Array.from(cuisines).sort(),
+        meal_times: Array.from(meal_times).sort()
       }
     });
   }
@@ -276,53 +163,96 @@ app.get("/tags", async (req, res) => {
   }
 });
 
-
-app.get("/newPost", sessionValidation, (req, res) => {
-  try {
-    // Send the HTML file
-    res.sendFile(path.join(__dirname, 'newpost.html')); // Adjust path if needed
-  }
-  catch (error) {
-    console.error("Error serving newPost page:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+// Example of a route handler that uses Cognito
+app.get('/newPost', (req, res) => {
+  res.sendFile(path.join(__dirname, 'newpost.html')); // Adjust path if needed
 });
 
 
-app.post("/posting", upload.single("image"), async (req, res) => {
+
+app.post('/posting', upload.single('image'), async (req, res) => {
   try {
-    const user = req.session.email;
-    const { title, ingredients, instructions, category, cuisine, meal_time, cooking_time } = req.body;
+    const {
+      title,
+      ingredients,
+      instructions,
+      category,
+      cuisine,
+      meal_time,
+      cooking_time
+    } = req.body;
 
-    console.log("Tags should appear here:", { category, cuisine, meal_time });
+    // Get user from session or token
+    const user = req.user ? req.user.id : 'anonymous';
 
+    // Generate unique recipe ID
+    const recipeId = uuidv4();
+    const createdAt = new Date().toISOString();
+
+    // Handle image upload to S3 (optional)
+    // let imageUrl = null;
+    // if (req.file) {
+    //   const params = {
+    //     Bucket: BUCKET_NAME,
+    //     Key: `recipes/${recipeId}/${req.file.originalname}`,
+    //     Body: req.file.buffer,
+    //     ContentType: req.file.mimetype
+    //   };
+
+    //   const s3Result = await s3.upload(params).promise();
+    //   imageUrl = s3Result.Location;
+    // }
+
+    // Normalize tag inputs
+    const normalizedCategories = Array.isArray(category)
+      ? category
+      : [category].filter(Boolean);
+
+    const normalizedMealTimes = Array.isArray(meal_time)
+      ? meal_time
+      : [meal_time].filter(Boolean);
+
+    // Prepare recipe item
     const newRecipe = {
+      pk: `RECIPE#${recipeId}`,
+      sk: `METADATA#${recipeId}`,
+      recipeId,
       user,
       title,
-      image: req.file
-        ? {
-          name: req.file.originalname,
-          data: req.file.buffer, // Store raw binary image data
-          mimetype: req.file.mimetype, // Store the image type (e.g., "image/png")
-        }
-        : null, // If no image is uploaded, store `null`
-      ingredients: ingredients.split(","), // Convert CSV string into an array
+      imageUrl,
+      ingredients: ingredients.split(',').map(ing => ing.trim()),
       instructions,
       tags: {
-        category: category || null,
-        cuisine: cuisine || null,
-        meal_time: meal_time || null,
+        category: normalizedCategories,
+        cuisine,
+        meal_time: normalizedMealTimes
       },
       cooking_time,
-      createdAt: new Date(),
+      createdAt,
+
+      // Optional indexing fields
+      gsi1pk: `USER#${user}`,
+      gsi1sk: `RECIPE#${createdAt}`,
+      gsi2pk: `CUISINE#${cuisine}`,
+      gsi3pk: `CATEGORY#${normalizedCategories[0]}`
     };
 
-    const result = await recipesCollection.insertOne(newRecipe);
+    // Write to DynamoDB
+    await dynamoDB.put({
+      TableName: recipesTable,
+      Item: newRecipe
+    }).promise();
 
-    res.json({ message: "Recipe added successfully!", recipeId: result.insertedId });
+    res.status(201).json({
+      message: 'Recipe created successfully',
+      recipeId
+    });
   } catch (error) {
-    console.error("Error adding recipe:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Recipe creation error:', error);
+    res.status(500).json({
+      error: 'Failed to create recipe',
+      details: error.message
+    });
   }
 });
 
@@ -330,25 +260,15 @@ app.post("/posting", upload.single("image"), async (req, res) => {
 // RECIPES PAGE
 app.get("/recipes", async (req, res) => {
   try {
-    const { category, cuisine, meal_time } = req.query;
-
-    let filter = [];
-
-    if (category) filter.push({ "tags.category": category });
-    if (cuisine) filter.push({ "tags.cuisine": cuisine });
-    if (meal_time) filter.push({ "tags.meal_time": meal_time });
-
-    // Apply filtering only if there are conditions
-    const query = filter.length > 0 ? { $and: filter } : {};
-
-    const recipes = await recipesCollection.find(query).toArray();
-    res.json(recipes);
-  }
-  catch (error) {
+    const params = { TableName: recipesTable };
+    const data = await dynamoDB.scan(params).promise();
+    res.json({ recipes: data.Items });
+  } catch (error) {
     console.error("Error fetching recipes:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 // I think I can just reuse the app.get("/getTags") api route 
 app.get("/getFilters", async (req, res) => {
@@ -438,5 +358,6 @@ const authenticate = (req, res, next) => {
 // app.get("/profile", authenticate, (req, res) => {
 //     res.send(`Welcome, user ${req.user.email}`);
 // });
+
 
 app.listen(3000, () => console.log("Server running on port 3000"));

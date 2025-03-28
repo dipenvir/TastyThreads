@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="navbars\navbar.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.2.0/dist/amazon-cognito-identity.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -22,14 +24,16 @@
   <!-- NAVIGATION BAR -->
   <header id="navbar"></header>
 
-    <main>
-        <!-- Welcome Message -->
-        <section class="welcome">
-            <div class="container">
-                <h2>Welcome back, <span id="userName" style="font-family: 'Poppins', sans-serif; font-weight: 600; color: #e65a50;">User</span>!</h2>
-                <p style="font-family: 'Poppins', sans-serif; font-size: 20px; color: #2c3e50;">What’s cooking today? Explore your saved recipes or discover something new!</p>
-            </div>
-        </section>
+  <main>
+    <!-- Welcome Message -->
+    <section class="welcome">
+      <div class="container">
+        <h2>Welcome back, <span id="userName"
+            style="font-family: 'Poppins', sans-serif; font-weight: 600; color: #e65a50;">User</span>!</h2>
+        <p style="font-family: 'Poppins', sans-serif; font-size: 20px; color: #2c3e50;">What’s cooking today? Explore
+          your saved recipes or discover something new!</p>
+      </div>
+    </section>
 
     <!-- Food Categories -->
     <section class="categories">
@@ -70,8 +74,8 @@
         <input type="text" placeholder="Search for recipes...">
         <a href="recipes.html">
           <button href="recipes.html">Show All Recipes</button>
-      </a>
-        
+        </a>
+
       </div>
     </section>
     <!-- Saved Recipes -->
@@ -132,8 +136,9 @@
   </main>
 
   <!-- Scripts -->
+  <script src="cognitoConfig.js"></script>
   <script src="skeleton.js"></script>
-  <script src="script.js"></script> <!-- what is this -->
+  <script src="script.js"></script>
   <script src="home.js"></script>
 </body>
 

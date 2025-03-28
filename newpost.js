@@ -12,11 +12,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Populate Category checkboxes
       const categoryContainer = document.getElementById('categoryContainer');
-      categoryContainer.innerHTML = ''; // Clear existing
-      data.availableTags.categories.forEach(tag => {
-        const checkbox = createCheckbox('category', tag);
-        categoryContainer.appendChild(checkbox);
-      });
+      categoryContainer.innerHTML = ''; // Clear existing checkboxes
+
+      // Ensure the data is structured correctly
+      const categories = data.tags?.category;  // Access the category list safely
+
+      if (Array.isArray(categories)) {
+        categories.forEach(tag => {
+          const checkbox = createCheckbox('category', tag);
+          categoryContainer.appendChild(checkbox);
+        });
+      } else {
+        console.error("Expected 'tags.category' to be a List (Array in JS), but got:", categories);
+      }
+
 
       // Populate Cuisine dropdown
       const cuisineDropdown = document.getElementById('cuisine');
@@ -25,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
       defaultOption.value = '';
       defaultOption.textContent = 'Select Cuisine';
       cuisineDropdown.appendChild(defaultOption);
-      
+
       data.availableTags.cuisines.forEach(tag => {
         const option = document.createElement('option');
         option.value = tag;
@@ -67,16 +76,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Image preview functionality
-  imageInput.addEventListener('change', function(event) {
+  imageInput.addEventListener('change', function (event) {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         imagePreview.innerHTML = `
           <img src="${e.target.result}" alt="Image Preview" class="preview-image">
           <button type="button" class="remove-image">Remove</button>
         `;
-        
+
         // Remove image functionality
         document.querySelector('.remove-image').addEventListener('click', () => {
           imagePreview.innerHTML = '';
@@ -88,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Form submission handler
-  form.addEventListener('submit', async function(event) {
+  form.addEventListener('submit', async function (event) {
     event.preventDefault();
 
     // Validate form
@@ -101,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const categories = Array.from(
       document.querySelectorAll('input[name="category"]:checked')
     ).map(el => el.value);
-    
+
     const mealTimes = Array.from(
       document.querySelectorAll('input[name="meal_time"]:checked')
     ).map(el => el.value);

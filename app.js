@@ -111,44 +111,36 @@ app.post("/loggingin", async (req, res) => {
 // TODO REFACTOR CREATING A NEW POST PAGE
 app.get("/tags", async (req, res) => {
   try {
-    // Scan the entire table to extract unique tags
     const params = {
       TableName: recipesTable,
-      // Only fetch the tags attribute to minimize data transfer
-      ProjectionExpression: 'tags.category, tags.cuisine, tags.meal_time'
+      ProjectionExpression: "tags.category, tags.cuisine, tags.meal_time"
     };
 
     const result = await dynamoDB.scan(params).promise();
 
-    // Extract unique tags
     const categories = new Set();
     const cuisines = new Set();
     const meal_times = new Set();
 
     result.Items.forEach(item => {
-      // Handle categories (could be array or single value)
-      if (item.tags?.category) {
-        const categoriesToAdd = Array.isArray(item.tags.category)
-          ? item.tags.category
-          : [item.tags.category];
-        categoriesToAdd.forEach(cat => categories.add(cat));
+      // Handle categories (DynamoDB List format)
+      if (item.tags?.category?.L) {
+        item.tags.category.L.forEach(cat => categories.add(cat.S)); // Extract the string value
       }
 
-      // Handle cuisine
-      if (item.tags?.cuisine) {
-        cuisines.add(item.tags.cuisine);
+      // Handle cuisine (DynamoDB stores as single value)
+      if (item.tags?.cuisine?.S) {
+        cuisines.add(item.tags.cuisine.S);
       }
 
-      // Handle meal times (could be array or single value)
-      if (item.tags?.meal_time) {
-        const mealTimesToAdd = Array.isArray(item.tags.meal_time)
-          ? item.tags.meal_time
-          : [item.tags.meal_time];
-        mealTimesToAdd.forEach(mt => meal_times.add(mt));
+      // Handle meal times (DynamoDB List format)
+      if (item.tags?.meal_time?.L) {
+        item.tags.meal_time.L.forEach(mt => meal_times.add(mt.S)); // Extract string value
+      } else if (item.tags?.meal_time?.S) {
+        meal_times.add(item.tags.meal_time.S);
       }
     });
 
-    // Send structured tag data
     res.json({
       availableTags: {
         categories: Array.from(categories).sort(),
@@ -156,12 +148,12 @@ app.get("/tags", async (req, res) => {
         meal_times: Array.from(meal_times).sort()
       }
     });
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error fetching tags:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 // Example of a route handler that uses Cognito
 app.get('/newPost', (req, res) => {

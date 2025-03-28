@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up & Login</title>
     <link rel="stylesheet" href="login.css">
+
+    <!-- Scripts -->
+    <!-- AWS Cognito SDK -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.2.0/dist/amazon-cognito-identity.min.js"></script>
+
+    <script src="cognitoConfig.js"></script>
+
+
+
 </head>
 
 <body>
@@ -15,10 +25,10 @@
     <div class="container">
         <!-- CREATING ACCOUNT -->
         <h1 id="register-head"><b>Create an Account</b></h1>
-        <form action="/registerUser" method="post" id="register-form">
+        <form onsubmit="event.preventDefault(); signUpUser();" id="register-form">
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" required placeholder="Enter username">
+                <input type="text" id="name" name="username" required placeholder="Enter username">
             </div>
             <div class="form-group">
                 <label for="email">Email Address</label>
@@ -33,7 +43,7 @@
 
         <!-- LOG IN EXISTING ACCOUNT -->
         <h1 id="login-head">Login</h1>
-        <form action="/loggingin" method="post" id="login-form">
+        <form onsubmit="event.preventDefault(); loginUser();" id="login-form">
             <div class="form-group">
                 <label for="login-email">Email Address</label>
                 <input type="email" id="login-email" name="loginEmail" required placeholder="Email">
@@ -57,7 +67,10 @@
         <p id="message"></p> <!-- Display success/error messages -->
     </div>
 
-    <script src="login.js"></script> <!-- Link to your JavaScript file -->
+    <!-- Link to your JavaScript file -->
+    <script src="cognitoConfig.js"></script>
+    <script src="login.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>

@@ -122,3 +122,47 @@ document.addEventListener("DOMContentLoaded", () => {
         message.textContent = data;
     });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    resetPasswordRequirements();
+    
+    // Attach event listener to the password field
+    document.getElementById("password").addEventListener("input", checkPasswordRequirements);
+});
+
+function resetPasswordRequirements() {
+    const requirements = {
+        length: "At least 8 characters",
+        uppercase: "One uppercase letter",
+        lowercase: "One lowercase letter",
+        number: "One number",
+        special: "One special character (@, #, $, etc.)"
+    };
+
+    for (const id in requirements) {
+        updateRequirement(id, false, requirements[id]);
+    }
+}
+
+function checkPasswordRequirements() {
+    const password = document.getElementById("password").value;
+
+    // Password conditions
+    const conditions = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /[0-9]/.test(password),
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    };
+
+    for (const id in conditions) {
+        updateRequirement(id, conditions[id], document.getElementById(id).textContent.slice(2));
+    }
+}
+
+function updateRequirement(id, isValid, text) {
+    const element = document.getElementById(id);
+    element.innerHTML = isValid ? `✅ ${text}` : `❌ ${text}`;
+    element.style.color = isValid ? "green" : "red";
+}

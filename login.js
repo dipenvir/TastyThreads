@@ -166,3 +166,26 @@ function updateRequirement(id, isValid, text) {
     element.innerHTML = isValid ? `✅ ${text}` : `❌ ${text}`;
     element.style.color = isValid ? "green" : "red";
 }
+
+function signUpUser() {
+    const username = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const messageBox = document.getElementById("message");
+
+    const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+    const attributeList = [
+        new AmazonCognitoIdentity.CognitoUserAttribute({ Name: "email", Value: email })
+    ];
+
+    userPool.signUp(username, password, attributeList, null, function(err, result) {
+        if (err) {
+            messageBox.innerHTML = `<span style="color: red;">${err.message}</span>`;
+        } else {
+            messageBox.innerHTML = `<span style="color: green;">Account created! Redirecting...</span>`;
+            setTimeout(() => {
+                window.location.href = `confirm.html`;
+            }, 2000);
+        }
+    });
+}

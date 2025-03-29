@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             console.log('Signup Successful:', result);
-            // alert('Signup successful! Please check your email for a confirmation code.');
+            // alert('Signup successful! Please check your email for a confirmation email.');
 
             window.location.href = 'confirm.html';
         }

@@ -4,29 +4,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check Your Email</title>
+    <title>Confirm Email</title>
     <link rel="stylesheet" href="login.css">
-    <!-- AWS Cognito SDK -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.2.0/dist/amazon-cognito-identity.min.js"></script>
 </head>
 
 <body>
     <div class="container">
-        <h1>Check Your Email</h1>
-        <p>A confirmation link has been sent to your email. Click the link to complete the sign-in process.</p>
-
-        <p>Once you've confirmed, <a href="home.html" id="redirect-link">click here</a> if you're not automatically
-            redirected.</p>
-
-        <p id="message"></p>
+        <h1>Email Confirmation</h1>
+        <p>Check your email for the confirmation link.</p>
+        <p>Please proceed after successful confirmation:</p>
+        <button id="proceed-btn">Proceed</button>
     </div>
 
-    <script src="cognitoConfig.js"></script>
-    <script src="skeleton.js"></script>   
-    <script src="script.js"></script> 
-    <script src="confirm.js"></script> <!-- confirm.js will handle automatic redirection -->
-
+    <script>
+        document.getElementById("proceed-btn").addEventListener("click", function () {
+            window.location.href = "login.html"; // Redirect to login page
+        });
+    </script>
 </body>
 
 </html>
+
+
+<!-- <script src="cognitoConfig.js"></script>
+<script src="skeleton.js"></script>
+<script src="script.js"></script>
+<script src="login.js"></script>
+<script src="confirm.js"></script>
+
+</body>
+
+</html> -->

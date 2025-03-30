@@ -9,56 +9,60 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(window.userPool);
 
     window.signUpUser = function () {
-        const name = document.getElementById("name").value;
-        const password = document.getElementById("password").value;
-        const email = document.getElementById("email").value;
+    const name = document.getElementById("name").value;
+    const password = document.getElementById("password").value;
+    const email = document.getElementById("email").value;
 
-        // Validate inputs
-        if (!name || !password || !email) {
-            alert('Please fill in all fields');
-            return;
-        }
+    // Validate inputs
+    if (!name || !password || !email) {
+        alert('Please fill in all fields');
+        return;
+    }
 
-        // Prepare user attributes
-        const attributeList = [
-            new AmazonCognitoIdentity.CognitoUserAttribute({
-                Name: 'email',
-                Value: email
-            }),
-            new AmazonCognitoIdentity.CognitoUserAttribute({
-                Name: 'name',
-                Value: name
-            })
-        ];
+    // Prepare user attributes
+    const attributeList = [
+        new AmazonCognitoIdentity.CognitoUserAttribute({
+            Name: 'email',
+            Value: email
+        }),
+        new AmazonCognitoIdentity.CognitoUserAttribute({
+            Name: 'name',
+            Value: name
+        })
+    ];
 
-        // Perform signup
-        userPool.signUp(
-            name, // Use email as username
-            password,
-            attributeList,
-            null,
-            (err, result) => {
-                if (err) {
-                    console.error('Signup Error:', err);
 
-                    let errorMessage = 'Signup failed. ';
-                    if (err.code === 'UsernameExistsException') {
-                        errorMessage += 'This email is already registered.';
-                    } else if (err.code === 'InvalidParameterException') {
-                        errorMessage += 'Invalid parameter. Please check your input.';
-                    } else {
-                        errorMessage += err.message || 'Please try again.';
-                    }
+    // Perform signup
+    userPool.signUp(
+        name, // Use email as username
+        password,
+        attributeList,
+        null,
+        (err, result) => {
+            if (err) {
+                console.error('Signup Error:', err);
 
-                    alert(errorMessage);
-                    return;
+                let errorMessage = 'Signup failed. ';
+                if (err.code === 'UsernameExistsException') {
+                    errorMessage += 'This email is already registered.';
+                } else if (err.code === 'InvalidParameterException') {
+                    errorMessage += 'Invalid parameter. Please check your input.';
+                } else {
+                    errorMessage += err.message || 'Please try again.';
                 }
 
-                console.log('Signup Successful:', result);
-                alert('Signup successful! Please check your email for a confirmation code.');
+                alert(errorMessage);
+                return;
             }
-        );
-    };
+
+            console.log('Signup Successful:', result);
+            // alert('Signup successful! Please check your email for a confirmation email.');
+
+            window.location.href = 'confirm.html';
+        }
+    );
+};
+
 
     // Login function
     window.loginUser = function () {

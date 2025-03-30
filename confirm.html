@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Email</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Email Confirmation</h1>
+        <p>Check your email for the confirmation link.</p>
+        <p>Please proceed after successful confirmation:</p>
+        <button id="proceed-btn">Proceed</button>
+    </div>
+
+    <script>
+        document.getElementById("proceed-btn").addEventListener("click", function () {
+            window.location.href = "login.html"; // Redirect to login page
+        });
+    </script>
+</body>
+
+</html>
+
+
+<!-- <script src="cognitoConfig.js"></script>
+<script src="skeleton.js"></script>
+<script src="script.js"></script>
+<script src="login.js"></script>
+<script src="confirm.js"></script>
+
+</body>
+
+</html> -->

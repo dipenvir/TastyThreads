@@ -142,36 +142,6 @@ function updateFilters() {
 }
 
 // Listen for continue button clicks
-// document.addEventListener("click", async function (event) {
-//     if (event.target.matches(".continueReadingBtn")) {
-//         const recipeId = event.target.getAttribute("data-id");
-
-//         try {
-//             const response = await fetch(`/recipe/${recipeId}`, {
-//                 method: "GET",
-//                 credentials: "include", // Ensures the cookie is sent
-//                 headers: {
-//                     "Content-Type": "application/json"
-//                 }
-//             });
-
-//             if (!response.ok) {
-//                 throw new Error(`Failed to fetch recipe: ${response.status}`);
-//             }
-
-//             const recipe = await response.json();
-//             console.log("Fetched Recipe:", recipe);
-
-//             // // Redirect to server-rendered page with authentication
-//             // window.location.href = `/recipe/${recipeId}`;
-//         } catch (error) {
-//             console.error("Error fetching recipe:", error);
-//             alert("Failed to load recipe. Please try again.");
-//         }
-//     }
-// });
-
-// Listen for continue button clicks
 document.addEventListener("click", function (event) {
     if (event.target.matches(".continueReadingBtn")) {
         const recipeId = event.target.getAttribute("data-id");

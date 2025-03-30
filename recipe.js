@@ -43,14 +43,34 @@ function populateRecipeDetails(recipe) {
     `;
 
     // Set the image
+    // const imageElement = document.querySelector(".recipe-image img");
+    // let imageSrc = "/img/bowl.jpg"; // Default image
+    // if (recipe.image && !recipe.image.NULL) {
+    //     // Handle base64 image if available
+    //     if (recipe.image.B) {
+    //         imageSrc = `data:image/jpeg;base64,${recipe.image.B}`;
+    //     }
+    // }
+
+    // Set the image
+    // Set the image
     const imageElement = document.querySelector(".recipe-image img");
     let imageSrc = "/img/bowl.jpg"; // Default image
-    if (recipe.image && !recipe.image.NULL) {
-        // Handle base64 image if available
-        if (recipe.image.B) {
+
+    if (recipe.image) {
+        // Check if image is an object with data property
+        if (recipe.image.data) {
+            imageSrc = `data:${recipe.image.mimetype || 'image/jpeg'};base64,${recipe.image.data}`;
+        }
+        // Fallback for other possible formats
+        else if (typeof recipe.image === 'string') {
+            imageSrc = `data:image/jpeg;base64,${recipe.image}`;
+        }
+        else if (recipe.image.B) {
             imageSrc = `data:image/jpeg;base64,${recipe.image.B}`;
         }
     }
+
     imageElement.src = imageSrc;
     imageElement.alt = recipe.title;
 

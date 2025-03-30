@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.ok) {
               console.log("User logged out successfully");
-              window.location.href = "/login";
+              window.location.href = "/";
             } else {
               console.log("Failed to log out");
               alert("Logout failed. Please try again.");

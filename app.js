@@ -8,7 +8,7 @@ const multer = require("multer");
 const AWS = require("aws-sdk");
 const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 const jwt = require('jsonwebtoken');
-const userPool = require('./cognitoConfigBackend'); // Import userPool from the cognito module
+// const userPool = require('./cognitoConfigBackend'); // Import userPool from the cognito module
 const { v4: uuidv4 } = require('uuid');
 require("dotenv").config();
 
@@ -34,7 +34,10 @@ const clientId = process.env.COGNITO_CLIENT_ID;
 // Set up Cookie
 app.use(cors({
   origin: "*", // Wildcard, can update to EC2 IP address for better security 
-  credentials: true // Allows cookies to be sent
+  credentials: true, // Allows cookies to be sent
+
+  allowedHeaders: ["Content-Type", "Authorization"], // Allow auth headers
+
 }));
 
 app.use(cookie())
@@ -167,7 +170,7 @@ app.post("/loggingin", async (req, res) => {
     // Set the token in an HTTP-only cookie (secure prevents JS access)
     res.cookie("authToken", token, {
       httpOnly: true,
-      // secure: true, // Set to true if using HTTPS
+      secure: true, // Set to true if using HTTPS
       sameSite: "Lax", // 
       maxAge: 14400000, // 4 hours
     });
@@ -212,7 +215,7 @@ app.get("/tags", async (req, res) => {
 
     const result = await dynamoDB.scan(params).promise();
 
-    console.log("Raw Data from DynamoDB:", JSON.stringify(result.Items, null, 2));
+    // console.log("Raw Data from DynamoDB:", JSON.stringify(result.Items, null, 2));
 
     const categories = new Set();
     const cuisines = new Set();
@@ -490,15 +493,15 @@ app.get("/recipe/:id", authenticate, async (req, res) => {
         recipeID: req.params.id
       }
     };
-    
+
     console.log("DynamoDB request params:", JSON.stringify(params));
-    
+
     const result = await dynamoDB.get(params).promise();
-    
+
     if (!result.Item) {
-      return res.status(404).json({ error: "Recipe not found" });
+      return res.status(403).json({ error: "Recipe not found" });
     }
-    
+
     res.json(result.Item);
   } catch (error) {
     console.error("Error fetching recipe:", error);

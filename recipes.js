@@ -175,7 +175,7 @@ function updateFilters() {
 document.addEventListener("click", function (event) {
     if (event.target.matches(".continueReadingBtn")) {
         const recipeId = event.target.getAttribute("data-id");
-        window.location.href = `recipe.html?id=${recipeId}`;
+        window.location.href = `/recipe.html?id=${recipeId}`;
     }
 });
 

@@ -89,8 +89,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const email = document.getElementById("login-email").value;
         const password = document.getElementById("login-password").value;
 
-        const response = await fetch(`${API_URL}/loggingin`, {
+        const response = await fetch(`/loggingin`, {
             method: "POST",
+            credentials: "include", // Ensure cookie is saved
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
         });
@@ -125,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
     resetPasswordRequirements();
-    
+
     // Attach event listener to the password field
     document.getElementById("password").addEventListener("input", checkPasswordRequirements);
 });

@@ -1,30 +1,22 @@
-/**
- * Loads the navbar onto each page based on Cognito authentication status
- */
-function loadSkeleton() {
+async function loadSkeleton() {
   console.log("inside skeleton");
-  console.log("this should show function: " + typeof AmazonCognitoIdentity); // debugging, should print 'object' if Cognito is loaded
 
-  // Get the current user from Cognito
-  const cognitoUser = userPool.getCurrentUser();
-
-  if (cognitoUser != null) {
-    // If a user is logged in, fetch user info and load the appropriate navbar
-    cognitoUser.getSession((err, session) => {
-      if (err) {
-        console.error("Error getting session:", err);
-        loadNavbarBeforeLogin(); // In case of error, assume the user is not logged in
-      } else {
-        console.log("User is authenticated:", session.isValid());
-        if (session.isValid()) {
-          loadNavbarAfterLogin();
-        } else {
-          loadNavbarBeforeLogin();
-        }
-      }
+  try {
+    const response = await fetch("/check-auth", {
+      method: "GET",
+      credentials: "include" // Ensure cookies (including httpOnly cookies) are sent
     });
-  } else {
-    loadNavbarBeforeLogin(); // If no user is logged in, load navbar for non-authenticated users
+
+    if (response.ok) {
+      console.log("User is authenticated");
+      loadNavbarAfterLogin();
+    } else {
+      console.log("User is not authenticated");
+      loadNavbarBeforeLogin();
+    }
+  } catch (error) {
+    console.error("Error checking authentication:", error);
+    loadNavbarBeforeLogin();
   }
 }
 
@@ -45,3 +37,28 @@ function loadNavbarBeforeLogin() {
 }
 
 loadSkeleton();
+
+////////////////////////////////////////////////////////////////////////
+// BUTTON EVENTS BELOW //
+
+
+// // Sends token in req object when clicking NEWPOST
+// document.getElementById("newPostBtn").addEventListener("click", async () => {
+//   console.log("inside newpost button function")
+//   const token = localStorage.getItem("cognito_token"); // Retrieve token from storage
+
+//   const response = await fetch("/newPost", {
+//     method: "GET",
+//     headers: {
+//       "Authorization": `Bearer ${token}`, // Attach token in the request
+//       "Content-Type": "application/json",
+//     },
+//   });
+
+//   if (response.ok) {
+//     const html = await response.text();
+//     document.body.innerHTML = html; // Inject the response into the page
+//   } else {
+//     alert("Unauthorized: Please log in.");
+//   }
+// });

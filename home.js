@@ -1,14 +1,27 @@
-document.addEventListener("DOMContentLoaded", async () => {
+async function populateUserStats() {
     try {
-        const response = await fetch("/getUser");
-        const data = await response.json();
-        if (data.username != null) {
-            document.getElementById("userName").textContent = data.username;
+        const response = await fetch("/check-auth", {
+            method: "GET",
+            credentials: "include"
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+
+            const username = data.user?.username;
+
+            const username_holder = document.getElementById("userName");
+
+            if (username_holder) {
+                username_holder.innerHTML = username || "Unknown User";
+            }
         }
     } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error getting req.user info: ", error)
     }
-});
+}
+
+populateUserStats();
 
 // Redirects to the recipes page according to the tag clicked
 document.addEventListener("DOMContentLoaded", () => {

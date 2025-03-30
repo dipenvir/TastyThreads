@@ -1,7 +1,12 @@
+
+
+console.log("inside newpost.js: Is there a user: ", window.userPool.getCurrentUser())
+
 // Frontend JavaScript (newpost.js)
 document.addEventListener('DOMContentLoaded', () => {
+
   const form = document.getElementById('recipeForm');
-  const imagePreview = document.getElementById('imagePreview');
+  // const imagePreview = document.getElementById('imagePreview');
   const imageInput = document.getElementById('image');
 
   // Fetch and populate tags
@@ -12,10 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Populate Category checkboxes
       const categoryContainer = document.getElementById('categoryContainer');
-      categoryContainer.innerHTML = ''; // Clear existing checkboxes
+      categoryContainer.innerHTML = ''; // Clear existing
 
       // Ensure the data is structured correctly
-      const categories = data.tags?.category;  // Access the category list safely
+      const categories = data.availableTags?.categories;  // Access the category list safely
 
       if (Array.isArray(categories)) {
         categories.forEach(tag => {
@@ -25,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         console.error("Expected 'tags.category' to be a List (Array in JS), but got:", categories);
       }
-
 
       // Populate Cuisine dropdown
       const cuisineDropdown = document.getElementById('cuisine');
@@ -45,10 +49,19 @@ document.addEventListener('DOMContentLoaded', () => {
       // Populate Meal Time checkboxes
       const mealTimeContainer = document.getElementById('mealTimeContainer');
       mealTimeContainer.innerHTML = ''; // Clear existing
-      data.availableTags.meal_times.forEach(tag => {
-        const checkbox = createCheckbox('meal_time', tag);
-        mealTimeContainer.appendChild(checkbox);
-      });
+
+      // Ensure data is structured correctly
+      const meal_times = data.availableTags?.meal_times;  // Access safely
+
+      if (Array.isArray(meal_times)) {
+        meal_times.forEach(tag => {
+          const checkbox = createCheckbox('meal_time', tag);
+          mealTimeContainer.appendChild(checkbox);
+        });
+      } else {
+        console.error("Expected 'tags.meal_time' to be a List (Array in JS) but got:", meal_times);
+      }
+
     } catch (error) {
       console.error('Error fetching tags:', error);
       showErrorMessage('Failed to load tags. Please try again.');
@@ -75,28 +88,29 @@ document.addEventListener('DOMContentLoaded', () => {
     return label;
   }
 
-  // Image preview functionality
-  imageInput.addEventListener('change', function (event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        imagePreview.innerHTML = `
-          <img src="${e.target.result}" alt="Image Preview" class="preview-image">
-          <button type="button" class="remove-image">Remove</button>
-        `;
+  // // OPTIONAL: Image preview functionality
+  // imageInput.addEventListener('change', function (event) {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onload = function (e) {
+  //       imagePreview.innerHTML = `
+  //         <img src="${e.target.result}" alt="Image Preview" class="preview-image">
+  //         <button type="button" class="remove-image">Remove</button>
+  //       `;
 
-        // Remove image functionality
-        document.querySelector('.remove-image').addEventListener('click', () => {
-          imagePreview.innerHTML = '';
-          imageInput.value = ''; // Clear the file input
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  });
+  //       // Remove image functionality
+  //       document.querySelector('.remove-image').addEventListener('click', () => {
+  //         imagePreview.innerHTML = '';
+  //         imageInput.value = ''; // Clear the file input
+  //       });
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // });
 
   // Form submission handler
+  
   form.addEventListener('submit', async function (event) {
     event.preventDefault();
 
@@ -106,7 +120,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // Prepare form data
     const formData = new FormData(this);
 
-    // Collect multi-select fields
+    // // Get authenticated user email
+    // try {
+    //   const userEmail = await new Promise((resolve, reject) => {
+    //     const currentUser = window.userPool.getCurrentUser();
+
+    //     if (!currentUser) {
+    //       return resolve('anonymous');
+    //     }
+
+    //     // This is the key part - get session before trying to access attributes
+    //     currentUser.getSession((sessionErr, session) => {
+    //       if (sessionErr || !session.isValid()) {
+    //         console.log("Session error or invalid session:", sessionErr);
+    //         return resolve('anonymous');
+    //       }
+
+    //       // Now that we have a valid session, we can get attributes
+    //       currentUser.getUserAttributes((attrErr, attributes) => {
+    //         if (attrErr) {
+    //           console.error("Error getting user attributes:", attrErr);
+    //           return resolve('anonymous');
+    //         }
+
+    //         const emailAttribute = attributes.find(attr => attr.Name === 'email');
+    //         if (emailAttribute) {
+    //           return resolve(emailAttribute.Value);
+    //         } else {
+    //           return resolve('anonymous');
+    //         }
+    //       });
+    //     });
+    //   });
+
+    //   console.log("User email for submission:", userEmail);
+    //   formData.append('userEmail', userEmail);
+
+    // Rest of your form processing code
+
     const categories = Array.from(
       document.querySelectorAll('input[name="category"]:checked')
     ).map(el => el.value);
@@ -115,18 +166,19 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('input[name="meal_time"]:checked')
     ).map(el => el.value);
 
-    // Modify formData to handle multi-select
     formData.delete('category');
     categories.forEach(cat => formData.append('category', cat));
 
     formData.delete('meal_time');
     mealTimes.forEach(mt => formData.append('meal_time', mt));
+    console.log(formData)
 
     try {
       const response = await fetch('/posting', {
         method: 'POST',
         body: formData
       });
+
 
       const result = await response.json();
 
@@ -182,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Utility message functions
   function showSuccessMessage(message) {
-    const messageContainer = document.getElementById('messageContainer');
+    const messageContainer = document.getElementById('confirmationMessage');
     messageContainer.innerHTML = `
       <div class="alert alert-success">${message}</div>
     `;
@@ -192,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showErrorMessage(message) {
-    const messageContainer = document.getElementById('messageContainer');
+    const messageContainer = document.getElementById('confirmationMessage');
     messageContainer.innerHTML = `
       <div class="alert alert-danger">${message}</div>
     `;

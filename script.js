@@ -88,6 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
         cognitoUser.authenticateUser(authenticationDetails, {
             onSuccess: function (result) {
                 console.log('Login Successful:', result);
+
+                // STORE TOKEN for future API requests
+                localStorage.setItem("cognito_id_token", result.getIdToken().getJwtToken());
+                localStorage.setItem("cognito_access_token", result.getAccessToken().getJwtToken()); // For backend auth (Access token)
+
+
                 alert('Login successful! Redirecting...');
                 // Redirect or take appropriate action after successful login
                 window.location.href = 'home.html'; // Example redirect

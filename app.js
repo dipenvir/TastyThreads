@@ -1,5 +1,7 @@
 // IMPORTS
 const express = require("express");
+const cookie = require("cookie-parser");
+const cors = require("cors");
 const app = express();
 const path = require("path");
 const multer = require("multer");
@@ -23,11 +25,87 @@ const upload = multer({ storage: storage });
 
 // ENV VARIABLES
 const recipesTable = process.env.DYNAMODB_RECIPES_TABLE;
+const clientId = process.env.COGNITO_CLIENT_ID;
 
 // // AWS SDK imports
 // const { DynamoDBClient, PutItemCommand, GetItemCommand, UpdateItemCommand, QueryCommand } = require("@aws-sdk/client-dynamodb");
 // const { unmarshall } = require("@aws-sdk/util-dynamodb");
 
+// Set up Cookie
+app.use(cors({
+  origin: "*", // Wildcard, can update to EC2 IP address for better security 
+  credentials: true // Allows cookies to be sent
+}));
+
+app.use(cookie())
+
+// // LOGIN (COGNITO AUTHENTICATION WITH TOKEN)
+// app.post("/loggingin", async (req, res) => {
+//   const { email, password } = req.body;
+//   try {
+//     const params = {
+//       AuthFlow: "USER_PASSWORD_AUTH",
+//       ClientId: clientId,
+//       AuthParameters: {
+//         USERNAME: email,
+//         PASSWORD: password,
+//       },
+//     };
+//     const authResult = await cognito.initiateAuth(params).promise();
+//     // Send the token to the front end
+//     res.json({
+//       message: "Login successful",
+//       token: authResult.AuthenticationResult.IdToken
+//     });
+//   } catch (error) {
+//     console.error("Error logging in:", error);
+//     res.status(401).json({ error: "Invalid credentials" });
+//   }
+// });
+
+// Middleware
+
+const authenticate = async (req, res, next) => {
+
+  const token = req.cookies.authToken; // Read token from cookie
+
+  if (!token) {
+    return res.status(403).send("Access denied. No token found.");
+  }
+
+  try {
+    // For Cognito tokens, you need to verify using the JWKS (JSON Web Key Set)
+    // from your Cognito User Pool
+
+    // This is a simplified approach - using the cognito object you already have
+    const params = { AccessToken: token };
+    // Verify the access token is valid
+    const userData = await cognito.getUser(params).promise();
+
+    // If we get here, token is valid - extract user info
+    const email = userData.UserAttributes.find(attr => attr.Name === 'email')?.Value;
+    const username = userData.UserAttributes.find(attr => attr.Name === 'name')?.Value;
+
+    console.log("UserAttributes:", userData.UserAttributes);
+
+
+    // Add user info to request
+    req.user = {
+      email: email,
+      username: username
+    };
+
+    next();
+  } catch (err) {
+    console.error("Token verification error:", err);
+    res.status(401).send("Invalid token");
+  }
+};
+
+// Route for authentication (for front-end authentication since we are using HTTP-only cookies)
+app.get("/check-auth", authenticate, async (req, res) => {
+  res.json({ authenticated: true, user: req.user }) // might as well send user information
+})
 
 // TODO RAFACTOR LANDING PAGE
 app.get("/", async (req, res) => {
@@ -36,7 +114,7 @@ app.get("/", async (req, res) => {
 )
 
 // TODO RAFACTOR HOME PAGE
-app.get("/home", async (req, res) => {
+app.get("/home", authenticate, async (req, res) => {
   res.sendFile(path.join(__dirname, "home.html"))
 })
 
@@ -55,9 +133,10 @@ app.get("/home", async (req, res) => {
 //   }
 // });
 
-// TODO LOGOUT (Clears session token on frontend)
+// LOGGING OUT
 app.get("/logout", (req, res) => {
-  res.json({ message: "Logout successful" });
+  res.clearCookie("authToken"); // authToken is the name of our cookie
+  res.json({ message: "Logged out successfully" });
 });
 
 
@@ -65,6 +144,37 @@ app.get("/logout", (req, res) => {
 app.get("/login", async (req, res) => {
   res.sendFile(path.join(__dirname, "login.html"))
 })
+
+// Login with cookie
+app.post("/loggingin", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const params = {
+      AuthFlow: "USER_PASSWORD_AUTH",
+      ClientId: clientId,
+      AuthParameters: {
+        USERNAME: email,
+        PASSWORD: password,
+      },
+    };
+
+    const authResult = await cognito.initiateAuth(params).promise();
+    const token = authResult.AuthenticationResult.AccessToken; // ✅ Use Access Token
+
+    // Set the token in an HTTP-only cookie (secure prevents JS access)
+    res.cookie("authToken", token, {
+      httpOnly: true,
+      // secure: true, // Set to true if using HTTPS
+      sameSite: "Lax", // 
+      maxAge: 14400000, // 4 hours
+    });
+
+    res.json({ redirect: "/home" });
+  } catch (error) {
+    console.error("Error logging in:", error.message, error.stack);
+    res.status(401).json({ error: "Invalid credentials" });
+  }
+});
 
 // Register user
 app.post("/registerUser", async (req, res) => {
@@ -88,57 +198,49 @@ app.post("/registerUser", async (req, res) => {
 });
 
 
-// LOGIN (COGNITO AUTHENTICATION)
-app.post("/loggingin", async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const params = {
-      AuthFlow: "USER_PASSWORD_AUTH",
-      ClientId: clientId,
-      AuthParameters: {
-        USERNAME: email,
-        PASSWORD: password,
-      },
-    };
-    const authResult = await cognito.initiateAuth(params).promise();
-    res.json({ message: "Login successful", token: authResult.AuthenticationResult.IdToken });
-  } catch (error) {
-    console.error("Error logging in:", error);
-    res.status(401).json({ error: "Invalid credentials" });
-  }
-});
-
 // TODO REFACTOR CREATING A NEW POST PAGE
 app.get("/tags", async (req, res) => {
   try {
     const params = {
       TableName: recipesTable,
-      ProjectionExpression: "tags.category, tags.cuisine, tags.meal_time"
+      ProjectionExpression: "tags"
     };
 
     const result = await dynamoDB.scan(params).promise();
+
+    console.log("Raw Data from DynamoDB:", JSON.stringify(result.Items, null, 2));
 
     const categories = new Set();
     const cuisines = new Set();
     const meal_times = new Set();
 
     result.Items.forEach(item => {
-      // Handle categories (DynamoDB List format)
-      if (item.tags?.category?.L) {
-        item.tags.category.L.forEach(cat => categories.add(cat.S)); // Extract the string value
+      const tagData = item.tags; // Directly access the tags object
+
+      // Extract categories (Array of strings)
+      if (Array.isArray(tagData.category)) {
+        tagData.category.forEach(cat => {
+          categories.add(cat);
+        });
       }
 
-      // Handle cuisine (DynamoDB stores as single value)
-      if (item.tags?.cuisine?.S) {
-        cuisines.add(item.tags.cuisine.S);
+      // Extract cuisine (String)
+      if (typeof tagData.cuisine === 'string') {
+        cuisines.add(tagData.cuisine);
       }
 
-      // Handle meal times (DynamoDB List format)
-      if (item.tags?.meal_time?.L) {
-        item.tags.meal_time.L.forEach(mt => meal_times.add(mt.S)); // Extract string value
-      } else if (item.tags?.meal_time?.S) {
-        meal_times.add(item.tags.meal_time.S);
+      // Extract meal_time (Array of String)
+      if (Array.isArray(tagData.meal_time)) {
+        tagData.meal_time.forEach(mt => {
+          meal_times.add(mt);
+        })
       }
+    });
+
+    console.log("Processed Tags:", {
+      categories: Array.from(categories),
+      cuisines: Array.from(cuisines),
+      meal_times: Array.from(meal_times)
     });
 
     res.json({
@@ -155,14 +257,13 @@ app.get("/tags", async (req, res) => {
 });
 
 
+
 // Example of a route handler that uses Cognito
-app.get('/newPost', (req, res) => {
+app.get('/newPost', authenticate, (req, res) => {
   res.sendFile(path.join(__dirname, 'newpost.html')); // Adjust path if needed
 });
 
-
-
-app.post('/posting', upload.single('image'), async (req, res) => {
+app.post('/posting', authenticate, upload.single('image'), async (req, res) => {
   try {
     const {
       title,
@@ -174,65 +275,65 @@ app.post('/posting', upload.single('image'), async (req, res) => {
       cooking_time
     } = req.body;
 
-    // Get user from session or token
-    const user = req.user ? req.user.id : 'anonymous';
+    // User req.user.email
+    const userEmail = req.user.email || (req.user ? req.user.id : 'anonymous');
 
     // Generate unique recipe ID
     const recipeId = uuidv4();
     const createdAt = new Date().toISOString();
 
-    // Handle image upload to S3 (optional)
-    // let imageUrl = null;
-    // if (req.file) {
-    //   const params = {
-    //     Bucket: BUCKET_NAME,
-    //     Key: `recipes/${recipeId}/${req.file.originalname}`,
-    //     Body: req.file.buffer,
-    //     ContentType: req.file.mimetype
-    //   };
+    // Handle image if present
+    let image = null;
+    if (req.file) {
+      // Convert image buffer to base64 string for storage
+      const imageData = req.file.buffer.toString('base64');
 
-    //   const s3Result = await s3.upload(params).promise();
-    //   imageUrl = s3Result.Location;
-    // }
+      image = {
+        name: req.file.originalname,
+        mimetype: req.file.mimetype,
+        data: imageData // todo ONCE POSTING PAGE LOADS
+      };
+    }
 
     // Normalize tag inputs
     const normalizedCategories = Array.isArray(category)
       ? category
-      : [category].filter(Boolean);
+      : category ? [category] : [];
 
     const normalizedMealTimes = Array.isArray(meal_time)
       ? meal_time
-      : [meal_time].filter(Boolean);
+      : meal_time ? [meal_time] : [];
 
-    // Prepare recipe item
-    const newRecipe = {
-      pk: `RECIPE#${recipeId}`,
-      sk: `METADATA#${recipeId}`,
-      recipeId,
-      user,
-      title,
-      imageUrl,
-      ingredients: ingredients.split(',').map(ing => ing.trim()),
-      instructions,
+    // Parse ingredients properly
+    const parsedIngredients = Array.isArray(ingredients)
+      ? ingredients
+      : typeof ingredients === 'string'
+        ? ingredients.split(',').map(ing => ing.trim())
+        : [];
+
+    const recipeItem = {
+      user: userEmail, // This is now the email from the frontend
+      recipeID: recipeId,
+      cooking_time: cooking_time ? parseInt(cooking_time) : null,
+      createdAt: createdAt,
+      image: image,
+      ingredients: parsedIngredients,
+      instructions: instructions || "",
       tags: {
         category: normalizedCategories,
-        cuisine,
-        meal_time: normalizedMealTimes
+        cuisine: cuisine || "Unknown",
+        meal_time: normalizedMealTimes.length > 0
+          ? normalizedMealTimes
+          : ["Any"]
       },
-      cooking_time,
-      createdAt,
-
-      // Optional indexing fields
-      gsi1pk: `USER#${user}`,
-      gsi1sk: `RECIPE#${createdAt}`,
-      gsi2pk: `CUISINE#${cuisine}`,
-      gsi3pk: `CATEGORY#${normalizedCategories[0]}`
+      title: title || "Untitled Recipe"
     };
 
-    // Write to DynamoDB
+    console.log("Saving recipe with user:", userEmail);
+
     await dynamoDB.put({
       TableName: recipesTable,
-      Item: newRecipe
+      Item: recipeItem
     }).promise();
 
     res.status(201).json({
@@ -248,82 +349,99 @@ app.post('/posting', upload.single('image'), async (req, res) => {
   }
 });
 
-
-// RECIPES PAGE
+// RECIPES PAGE Filter and fetch recipes from DynamoDB
 app.get("/recipes", async (req, res) => {
   try {
-    const params = { TableName: recipesTable };
+    const { category, cuisine, meal_time } = req.query;
+
+    let params = {
+      TableName: recipesTable
+    };
+
+    // Add filtering if query parameters exist
+    if (category || cuisine || meal_time) {
+      let filterExpressions = [];
+      let expressionAttributeNames = {
+        "#tags": "tags"
+      };
+      let expressionAttributeValues = {};
+
+      if (category) {
+        filterExpressions.push("contains(#tags.#category, :category)");
+        expressionAttributeNames["#category"] = "category";
+        expressionAttributeValues[":category"] = category;
+      }
+
+      if (cuisine) {
+        filterExpressions.push("#tags.#cuisine = :cuisine");
+        expressionAttributeNames["#cuisine"] = "cuisine";
+        expressionAttributeValues[":cuisine"] = cuisine;
+      }
+
+      if (meal_time) {
+        filterExpressions.push("contains(#tags.#meal_time, :meal_time)");
+        expressionAttributeNames["#meal_time"] = "meal_time";
+        expressionAttributeValues[":meal_time"] = meal_time;
+      }
+
+      if (filterExpressions.length > 0) {
+        params.FilterExpression = filterExpressions.join(" AND ");
+        params.ExpressionAttributeNames = expressionAttributeNames;
+        params.ExpressionAttributeValues = expressionAttributeValues;
+      }
+    }
+
     const data = await dynamoDB.scan(params).promise();
-    res.json({ recipes: data.Items });
+
+    // Transform DynamoDB items to a more usable format for the frontend
+    const recipes = data.Items.map(item => {
+      return {
+        id: item.recipeID,
+        title: item.title,
+        instructions: item.instructions,
+        image: item.image,
+        ingredients: item.ingredients || [],
+        tags: item.tags || { category: [], cuisine: "", meal_time: [] },
+        cooking_time: item.cooking_time,
+        createdAt: item.createdAt
+      };
+    });
+
+    res.json(recipes);
   } catch (error) {
     console.error("Error fetching recipes:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-
-// I think I can just reuse the app.get("/getTags") api route 
-app.get("/getFilters", async (req, res) => {
-  try {
-    const categories = await recipesCollection.distinct("tags.category");
-    const cuisines = await recipesCollection.distinct("tags.cuisine");
-    const meal_times = await recipesCollection.distinct("tags.meal_time");
-
-    res.json({ categories, cuisines, meal_times });
-  } catch (error) {
-    console.error("Error fetching filters:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-// FETCHES THE IMAGE BY RECIPE ID
-app.get("/image/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const recipe = await recipesCollection.findOne({ _id: new ObjectId(id) });
-
-    if (!recipe || !recipe.image) {
-      return res.status(404).json({ error: "Image not found" });
-    }
-
-    res.set("Content-Type", recipe.image.mimetype);
-    res.send(recipe.image.data);
-  } catch (error) {
-    console.error("Error fetching image:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-
-// PROFILE PAGE
-app.get("/profile", (req, res) => {
-  res.sendFile(path.join(__dirname, "profile.html"));
-});
-
-app.get("/api/profile-recipes", async (req, res) => {
-  try {
-    console.log("Session data: ", req.session);
-    const userEmail = req.session.email;
-
-    if (!userEmail) {
-      return res.status(401).json({ error: "Unauthorized: No user logged in" });
-    }
-
-    const userRecipes = await recipesCollection.find({ user: userEmail }).toArray();
-    res.json(userRecipes);
-  } catch (error) {
-    console.error("Error fetching user recipes:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-// RECIPE PAGE (individual recipes, not the whole recipe page)
+// Get a single recipe by ID
 app.get("/recipe/:id", async (req, res) => {
   try {
-    const recipe = await recipesCollection.findById(req.params.id);
-    if (!recipe) {
+    const params = {
+      TableName: recipesTable,
+      Key: {
+        "recipeID": req.params.id
+      }
+    };
+
+    const data = await dynamoDB.getItem(params).promise();
+
+    if (!data.Item) {
       return res.status(404).json({ error: "Recipe not found" });
     }
+
+    const item = data.Item;
+    const recipe = {
+      id: item.recipeID,
+      title: item.title,
+      instructions: item.instructions,
+      image: item.image,
+      ingredients: item.ingredients || [],
+      tags: item.tags || { category: [], cuisine: "", meal_time: [] },
+      cooking_time: item.cooking_time,
+      createdAt: item.createdAt
+    };
+
     res.json(recipe);
   } catch (error) {
     console.error("Error fetching recipe:", error);
@@ -332,23 +450,65 @@ app.get("/recipe/:id", async (req, res) => {
 });
 
 
-// Protect routes middleware
-const authenticate = (req, res, next) => {
-  const token = req.header("Authorization");
-  if (!token) return res.status(403).send("Access denied");
+app.get("/profile", authenticate, (req, res) => {
+  res.sendFile(path.join(__dirname, "profile.html"));
+});
 
+// Backend route handler for /api/profile-recipes
+app.get("/api/profile-recipes", authenticate, async (req, res) => {
   try {
-    const verified = jwt.verify(token, SECRET_KEY);
-    req.user = verified;
-    next();
-  } catch (err) {
-    res.status(400).send("Invalid token");
-  }
-};
+    const userEmail = req.user.email;
 
-// Example of a protected route
-// app.get("/profile", authenticate, (req, res) => {
-//     res.send(`Welcome, user ${req.user.email}`);
+    if (!userEmail) {
+      return res.status(401).json({ error: "Unauthorized: No user logged in" });
+    }
+
+    // Query parameters for DynamoDB
+    // Using ExpressionAttributeNames to handle the reserved keyword `user` (dont use attribtue name 'user' in dynamodb for the future)
+    const params = {
+      TableName: recipesTable,
+      FilterExpression: "#userField = :userEmail",
+      ExpressionAttributeNames: {
+        "#userField": "user"
+      },
+      ExpressionAttributeValues: {
+        ":userEmail": userEmail
+      }
+    };
+
+
+    // Query DynamoDB
+    const result = await dynamoDB.scan(params).promise();
+
+    // Transform the result to a simplified format for the frontend
+    const userRecipes = result.Items.map(item => ({
+      recipeID: item.recipeID,
+      title: item.title,
+      cooking_time: item.cooking_time,
+      image: item.image,
+      tags: item.tags,
+      createdAt: item.createdAt
+    }));
+
+    res.json(userRecipes);
+  } catch (error) {
+    console.error("Error fetching user recipes:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// RECIPE PAGE (individual recipes, not the whole recipe page)
+// app.get("/recipe/:id", async (req, res) => {
+//   try {
+//     const recipe = await recipesCollection.findById(req.params.id);
+//     if (!recipe) {
+//       return res.status(404).json({ error: "Recipe not found" });
+//     }
+//     res.json(recipe);
+//   } catch (error) {
+//     console.error("Error fetching recipe:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
 // });
 
 

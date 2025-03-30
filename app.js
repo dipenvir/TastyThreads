@@ -8,7 +8,7 @@ const multer = require("multer");
 const AWS = require("aws-sdk");
 const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 const jwt = require('jsonwebtoken');
-const userPool = require('./cognitoConfigBackend'); // Import userPool from the cognito module
+// const userPool = require('./cognitoConfigBackend'); // Import userPool from the cognito module
 const { v4: uuidv4 } = require('uuid');
 require("dotenv").config();
 
@@ -38,7 +38,16 @@ app.use(cors({
 }));
 
 app.use(cookie())
+// app.use(cookie());
 
+// app.use((req, res, next) => {
+//   res.cookie("authToken", token, {
+//     httpOnly: true,
+//     secure: true, // Set to true in production (HTTPS)
+//     sameSite: "none", // Allow cross-origin cookies
+//   });
+//   next();
+// });
 
 // // LOGIN (COGNITO AUTHENTICATION WITH TOKEN)
 // app.post("/loggingin", async (req, res) => {
@@ -167,7 +176,7 @@ app.post("/loggingin", async (req, res) => {
     // Set the token in an HTTP-only cookie (secure prevents JS access)
     res.cookie("authToken", token, {
       httpOnly: true,
-      // secure: true, // Set to true if using HTTPS
+      secure: true, // Set to true if using HTTPS
       sameSite: "Lax", // 
       maxAge: 14400000, // 4 hours
     });

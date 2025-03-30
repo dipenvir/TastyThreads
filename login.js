@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Initially show the register form and hide the login form
-    showRegisterForm();
+    showLoginForm();
 
     // Register user
     registerForm.addEventListener("submit", async (e) => {

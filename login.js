@@ -64,8 +64,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Sends POST request containing user info as JSON data
         // NOTE: fetch doesn't automatically follow redirects (/registerUser in app.js redirects user to /home), so have to manually handle redirect in the frontend (below)
-        const response = await fetch(`${API_URL}/registerUser`, {
+        const response = await fetch(`/registerUser`, {
             method: "POST",
+            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, email, password }),
         });
@@ -179,7 +180,7 @@ function signUpUser() {
         new AmazonCognitoIdentity.CognitoUserAttribute({ Name: "email", Value: email })
     ];
 
-    userPool.signUp(username, password, attributeList, null, function(err, result) {
+    userPool.signUp(username, password, attributeList, null, function (err, result) {
         if (err) {
             messageBox.innerHTML = `<span style="color: red;">${err.message}</span>`;
         } else {

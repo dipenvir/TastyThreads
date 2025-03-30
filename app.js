@@ -39,6 +39,7 @@ app.use(cors({
 
 app.use(cookie())
 
+
 // // LOGIN (COGNITO AUTHENTICATION WITH TOKEN)
 // app.post("/loggingin", async (req, res) => {
 //   const { email, password } = req.body;
@@ -90,10 +91,12 @@ const authenticate = async (req, res, next) => {
 
 
     // Add user info to request
-    req.user = {
-      email: email,
-      username: username
-    };
+    // req.user = {
+    //   email: email,
+    //   username: username
+    // };
+
+    req.user = { email, username };
 
     next();
   } catch (err) {
@@ -114,7 +117,7 @@ app.get("/", async (req, res) => {
 )
 
 // TODO RAFACTOR HOME PAGE
-app.get("/home", authenticate, async (req, res) => {
+app.get("/home", async (req, res) => {
   res.sendFile(path.join(__dirname, "home.html"))
 })
 
@@ -176,29 +179,30 @@ app.post("/loggingin", async (req, res) => {
   }
 });
 
-// Register user
-app.post("/registerUser", async (req, res) => {
-  const { username, email, password } = req.body;
-  try {
-    const params = {
-      ClientId: clientId,
-      Username: email,
-      Password: password,
-      UserAttributes: [
-        { Name: "email", Value: email },
-        { Name: "custom:username", Value: username }
-      ],
-    };
-    await cognito.signUp(params).promise();
-    res.json({ message: "User registered successfully! Please confirm your email." });
-  } catch (error) {
-    console.error("Error registering user:", error);
-    res.status(500).json({ error: error.message });
-  }
-});
+// Register user (not using this)
+// app.post("/registerUser", async (req, res) => {
+//   const { username, email, password } = req.body;
+//   try {
+//     const params = {
+//       ClientId: clientId,
+//       Username: email,
+//       Password: password,
+//       UserAttributes: [
+//         { Name: "email", Value: email },
+//         { Name: "custom:username", Value: username }
+//       ],
+//     };
+//     await cognito.signUp(params).promise();
+//     res.json({ message: "User registered successfully! Please confirm your email." });
+//   } catch (error) {
+//     console.error("Error registering user:", error);
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 
 // TODO REFACTOR CREATING A NEW POST PAGE
+
 app.get("/tags", async (req, res) => {
   try {
     const params = {
@@ -396,7 +400,7 @@ app.get("/recipes", async (req, res) => {
     // Transform DynamoDB items to a more usable format for the frontend
     const recipes = data.Items.map(item => {
       return {
-        id: item.recipeID,
+        recipeID: item.recipeID,
         title: item.title,
         instructions: item.instructions,
         image: item.image,
@@ -414,41 +418,93 @@ app.get("/recipes", async (req, res) => {
   }
 });
 
-// Get a single recipe by ID
-app.get("/recipe/:id", async (req, res) => {
+// app.get("/recipe/:id", authenticate, async (req, res) => {
+//   console.log(`Attempting to fetch recipe with ID: ${req.params.id}`);
+//   console.log("email :", req.user.email)
+
+//   // if (!req.user || !req.user.sub) {
+//   //   return res.status(400).json({ error: "User authentication required" });
+//   // }
+
+//   // const userId = req.user.sub; // Use Cognito sub as the user ID
+
+//   // console.log("Type of user:", typeof req.user.email);
+//   // console.log("Type of recipeID:", typeof req.params.id);
+
+
+//   try {
+//     const params = {
+//       TableName: recipesTable,
+//       Key: {
+//         "user": { S: req.user.email },
+//         "recipeID": { S: req.params.id }
+//       }
+//     };
+
+//     console.log("DynamoDB request params:", JSON.stringify(params));
+
+//     const data = await dynamoDB.get(params).promise();
+//     console.log("DynamoDB response:", JSON.stringify(data));
+
+//     if (!data.Item) {
+//       return res.status(404).json({ error: "Recipe not found" });
+//     }
+
+//     const item = data.Item;
+//     const recipe = {
+//       id: item.recipeID.S,
+//       title: item.title.S,
+//       instructions: item.instructions.S,
+//       image: item.image.M,  // Keep the complex structure for image
+//       ingredients: item.ingredients.L.map(ing => ing.S),
+//       tags: {
+//         category: item.tags.M.category.L.map(cat => cat.S),
+//         cuisine: item.tags.M.cuisine.S,
+//         meal_time: item.tags.M.meal_time.L.map(time => time.S)
+//       },
+//       cooking_time: item.cooking_time.N,
+//       createdAt: item.createdAt.S
+//     };
+
+//     // Check if the request is expecting JSON or an HTML page
+//     if (req.headers.accept && req.headers.accept.includes("application/json")) {
+//       return res.json(recipe);
+//     } else {
+//       return res.render("recipe", { recipe }); // Render HTML page
+//     }
+//   } catch (error) {
+//     console.error("Error fetching recipe:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+app.get("/recipe/:id", authenticate, async (req, res) => {
+  console.log(`Attempting to fetch recipe with ID: ${req.params.id}`);
+  console.log("email :", req.user.email);
+
   try {
     const params = {
-      TableName: recipesTable,
-      Key: {
-        "recipeID": req.params.id
+      TableName: "TastyThreadsDB",
+      Key: { // Dont use low level type markers (use document client!)
+        user: req.user.email,
+        recipeID: req.params.id
       }
     };
-
-    const data = await dynamoDB.getItem(params).promise();
-
-    if (!data.Item) {
+    
+    console.log("DynamoDB request params:", JSON.stringify(params));
+    
+    const result = await dynamoDB.get(params).promise();
+    
+    if (!result.Item) {
       return res.status(404).json({ error: "Recipe not found" });
     }
-
-    const item = data.Item;
-    const recipe = {
-      id: item.recipeID,
-      title: item.title,
-      instructions: item.instructions,
-      image: item.image,
-      ingredients: item.ingredients || [],
-      tags: item.tags || { category: [], cuisine: "", meal_time: [] },
-      cooking_time: item.cooking_time,
-      createdAt: item.createdAt
-    };
-
-    res.json(recipe);
+    
+    res.json(result.Item);
   } catch (error) {
     console.error("Error fetching recipe:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Failed to fetch recipe" });
   }
 });
-
 
 app.get("/profile", authenticate, (req, res) => {
   res.sendFile(path.join(__dirname, "profile.html"));
@@ -496,20 +552,5 @@ app.get("/api/profile-recipes", authenticate, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-// RECIPE PAGE (individual recipes, not the whole recipe page)
-// app.get("/recipe/:id", async (req, res) => {
-//   try {
-//     const recipe = await recipesCollection.findById(req.params.id);
-//     if (!recipe) {
-//       return res.status(404).json({ error: "Recipe not found" });
-//     }
-//     res.json(recipe);
-//   } catch (error) {
-//     console.error("Error fetching recipe:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
 
 app.listen(3000, () => console.log("Server running on port 3000"));

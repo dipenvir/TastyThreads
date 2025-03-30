@@ -87,8 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     return label;
   }
-
-  // // OPTIONAL: Image preview functionality
   // imageInput.addEventListener('change', function (event) {
   //   const file = event.target.files[0];
   //   if (file) {
@@ -110,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // });
 
   // Form submission handler
-  
+
   form.addEventListener('submit', async function (event) {
     event.preventDefault();
 
@@ -119,44 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Prepare form data
     const formData = new FormData(this);
-
-    // // Get authenticated user email
-    // try {
-    //   const userEmail = await new Promise((resolve, reject) => {
-    //     const currentUser = window.userPool.getCurrentUser();
-
-    //     if (!currentUser) {
-    //       return resolve('anonymous');
-    //     }
-
-    //     // This is the key part - get session before trying to access attributes
-    //     currentUser.getSession((sessionErr, session) => {
-    //       if (sessionErr || !session.isValid()) {
-    //         console.log("Session error or invalid session:", sessionErr);
-    //         return resolve('anonymous');
-    //       }
-
-    //       // Now that we have a valid session, we can get attributes
-    //       currentUser.getUserAttributes((attrErr, attributes) => {
-    //         if (attrErr) {
-    //           console.error("Error getting user attributes:", attrErr);
-    //           return resolve('anonymous');
-    //         }
-
-    //         const emailAttribute = attributes.find(attr => attr.Name === 'email');
-    //         if (emailAttribute) {
-    //           return resolve(emailAttribute.Value);
-    //         } else {
-    //           return resolve('anonymous');
-    //         }
-    //       });
-    //     });
-    //   });
-
-    //   console.log("User email for submission:", userEmail);
-    //   formData.append('userEmail', userEmail);
-
-    // Rest of your form processing code
 
     const categories = Array.from(
       document.querySelectorAll('input[name="category"]:checked')
@@ -185,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (response.ok) {
         showSuccessMessage('Recipe posted successfully!');
         form.reset();
-        imagePreview.innerHTML = '';
+        // imagePreview.innerHTML = '';
       } else {
         throw new Error(result.error || 'Failed to post recipe');
       }
@@ -234,24 +194,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Utility message functions
   function showSuccessMessage(message) {
+    // console.log("inside success message: ", message)
     const messageContainer = document.getElementById('confirmationMessage');
-    messageContainer.innerHTML = `
-      <div class="alert alert-success">${message}</div>
-    `;
+    messageContainer.innerHTML = `<div class="alert alert-success">${message}</div>`;
+    messageContainer.style.display = "block"; // Show the message
     setTimeout(() => {
-      messageContainer.innerHTML = '';
-    }, 5000);
+      messageContainer.style.display = "none"; // Hide it after 10s
+    }, 10000);
   }
 
   function showErrorMessage(message) {
     const messageContainer = document.getElementById('confirmationMessage');
-    messageContainer.innerHTML = `
-      <div class="alert alert-danger">${message}</div>
-    `;
+    messageContainer.innerHTML = `<div class="alert alert-danger">${message}</div>`;
+    messageContainer.style.display = "block";
     setTimeout(() => {
-      messageContainer.innerHTML = '';
-    }, 5000);
+      messageContainer.style.display = "none";
+    }, 10000);
   }
+
 
   // Initial page load
   fetchAndPopulateTags();

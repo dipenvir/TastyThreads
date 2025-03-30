@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
           try {
             console.log("newPostBtn clicked");
             const token = localStorage.getItem("cognito_access_token");
-
+            console.log("TOKEN",token)
             if (!token) {
               alert("Unauthorized: No token found.");
               return;

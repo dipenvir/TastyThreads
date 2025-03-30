@@ -41,7 +41,16 @@ app.use(cors({
 }));
 
 app.use(cookie())
+// app.use(cookie());
 
+// app.use((req, res, next) => {
+//   res.cookie("authToken", token, {
+//     httpOnly: true,
+//     secure: true, // Set to true in production (HTTPS)
+//     sameSite: "none", // Allow cross-origin cookies
+//   });
+//   next();
+// });
 
 // // LOGIN (COGNITO AUTHENTICATION WITH TOKEN)
 // app.post("/loggingin", async (req, res) => {

@@ -61,13 +61,13 @@ async function fetchRecipes() {
                         <h4>${recipe.title}</h4>
                         <p><strong>Category: </strong> ${categories}</p>
                         <p><strong>Cuisine: </strong> ${recipe.tags.cuisine || "N/A"}</p>
-                        <p class="truncated-text"><strong>Instructions: </strong> ${recipe.instructions || "N/A"}</p>
+                        <p><strong>Instructions: </strong> ${recipe.instructions || "N/A"}</p>
                     </div>
                     <div class="recipe-info">
                         <p><strong>Meal Time: </strong> ${mealTimes}</p>
                         <p><strong>Ingredients: </strong> ${ingredients}</p>
                     </div>
-                    <button class="continueReadingBtn" data-id="${recipe.recipeID}">Continue Reading</button>
+                    
                 </div>
             `;
         }).join("");

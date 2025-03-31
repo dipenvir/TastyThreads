@@ -162,9 +162,12 @@ body {
 
 .recipe-details p {
     font-size: 16px;
-    /* Intro line font size */
     color: #666;
     margin: 0 0 10px 0;
+    white-space: normal;  /* Ensure text wraps */
+    overflow: visible;     /* Allow text to expand */
+    text-overflow: clip;   /* Prevent truncation */
+    max-height: none;      /* Remove any height restriction */
 }
 
 .recipe-details button {

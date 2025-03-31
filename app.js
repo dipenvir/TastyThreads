@@ -37,6 +37,10 @@ const clientId = process.env.COGNITO_CLIENT_ID;
 // const { DynamoDBClient, PutItemCommand, GetItemCommand, UpdateItemCommand, QueryCommand } = require("@aws-sdk/client-dynamodb");
 // const { unmarshall } = require("@aws-sdk/util-dynamodb");
 
+// COOKIE SET UP
+import Cookies from "js-cookie";
+
+
 // Set up Cookie
 app.use(cors({
   origin: "*", // Wildcard, can update to EC2 IP address for better security 

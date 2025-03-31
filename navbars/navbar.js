@@ -1,3 +1,6 @@
+
+
+// const Cookies = require("js-cookie");
 // Modular button setup system
 document.addEventListener("DOMContentLoaded", () => {
   try {

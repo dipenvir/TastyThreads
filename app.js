@@ -38,7 +38,7 @@ const clientId = process.env.COGNITO_CLIENT_ID;
 // const { unmarshall } = require("@aws-sdk/util-dynamodb");
 
 // COOKIE SET UP
-import Cookies from "js-cookie";
+// const Cookies = require("js-cookie");
 
 
 // Set up Cookie

@@ -281,7 +281,7 @@ app.get("/tags", async (req, res) => {
 
 
 // Example of a route handler that uses Cognito
-app.get('/newPost', authenticate, (req, res) => {
+app.get('/newPost', (req, res) => {
   res.sendFile(path.join(__dirname, 'newpost.html')); // Adjust path if needed
 });
 

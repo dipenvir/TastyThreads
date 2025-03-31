@@ -528,7 +528,7 @@ app.get("/recipe/:id", authenticate, async (req, res) => {
   }
 });
 
-app.get("/profile", authenticate, (req, res) => {
+app.get("/profile", (req, res) => {
   res.sendFile(path.join(__dirname, "profile.html"));
 });
 

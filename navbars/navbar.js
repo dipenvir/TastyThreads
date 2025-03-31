@@ -68,12 +68,12 @@ document.addEventListener("DOMContentLoaded", () => {
         clickHandler: async () => {
           try {
             console.log("profileBtn clicked");
-            const token = localStorage.getItem("cognito_access_token");
+            // const token = localStorage.getItem("cognito_access_token");
 
-            if (!token) {
-              alert("Unauthorized: No token found.");
-              return;
-            }
+            // if (!token) {
+            //   alert("Unauthorized: No token found.");
+            //   return;
+            // }
 
             const response = await fetch("/profile", {
               method: "GET",

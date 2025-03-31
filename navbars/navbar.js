@@ -1,3 +1,4 @@
+const Cookies = require("js-cookie");
 
 
 // const Cookies = require("js-cookie");
@@ -13,13 +14,16 @@ document.addEventListener("DOMContentLoaded", () => {
         clickHandler: async () => {
           try {
             console.log("newPostBtn clicked");
-            const token = req.cookies.authToken
-            // const token = localStorage.getItem("cognito_access_token");
+
+            const token = localStorage.getItem("cognito_access_token");
             console.log("TOKEN", token)
             if (!token) {
               alert("Unauthorized: No token found.");
               return;
             }
+
+            // Set the token as a cookie before making the request
+            Cookies.set("authToken", token);
 
             const response = await fetch("/newPost", {
               method: "GET",

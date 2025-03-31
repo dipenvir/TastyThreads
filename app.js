@@ -573,6 +573,6 @@ app.get("/api/profile-recipes", authenticate, async (req, res) => {
 
 // app.listen(443, () => console.log("Server running on port 443"));
 
-https.createServer(options, app).listen(PORT, () => {
-  console.log(`Server running at https://localhost:${PORT}`);
+https.createServer(options, app).listen(443, () => {
+  console.log(`Server running at https://localhost:443`);
 });

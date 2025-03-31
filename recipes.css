@@ -148,8 +148,13 @@ body {
 
 .recipe-details {
     flex: 1;
-    /* Take up remaining space */
     padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Ensures content isn't squished */
+    white-space: normal; /* Ensures wrapping */
+    overflow: visible;
+    max-height: none;
 }
 
 .recipe-details h4 {

@@ -2,6 +2,7 @@
 const express = require("express");
 const cookie = require("cookie-parser");
 const cors = require("cors");
+const fs = require("fs");
 const app = express();
 const path = require("path");
 const multer = require("multer");
@@ -10,6 +11,11 @@ const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 const jwt = require('jsonwebtoken');
 // const userPool = require('./cognitoConfigBackend'); // Import userPool from the cognito module
 const { v4: uuidv4 } = require('uuid');
+const https = require("https");
+const options = {
+  key: fs.readFileSync(path.join(__dirname, "key.pem")),
+  cert: fs.readFileSync(path.join(__dirname, "cert.pem")),
+};
 require("dotenv").config();
 
 app.use(express.json());
@@ -565,4 +571,8 @@ app.get("/api/profile-recipes", authenticate, async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log("Server running on port 3000"));
+// app.listen(443, () => console.log("Server running on port 443"));
+
+https.createServer(options, app).listen(PORT, () => {
+  console.log(`Server running at https://localhost:${PORT}`);
+});

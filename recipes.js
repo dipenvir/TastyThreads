@@ -55,20 +55,24 @@ async function fetchRecipes() {
                 : recipe.ingredients || "N/A";
 
             return `            
-                <div class="recipe-card">
+                < div class="recipe-card" >
                     <img src="${imageSrc}" alt="${recipe.title}">
-                    <div class="recipe-details">
-                        <h4>${recipe.title}</h4>
-                        <p><strong>Category: </strong> ${categories}</p>
-                        <p><strong>Cuisine: </strong> ${recipe.tags.cuisine || "N/A"}</p>
-                        <p><strong>Instructions: </strong> ${recipe.instructions || "N/A"}</p>
+                        <div class="recipe-details">
+                            <h4>${recipe.title}</h4>
+                            <p><strong>Category: </strong> ${categories}</p>
+                            <p><strong>Cuisine: </strong> ${recipe.tags.cuisine || "N/A"}</p>
+                            <p>
+                                <strong>Instructions: </strong>
+                                <span class="short-instructions">${recipe.instructions.slice(0, 100)}...</span>
+                                <span class="full-instructions" style="display: none;">${recipe.instructions}</span>
+                                <button class="read-more-btn" onclick="toggleInstructions(this)">Read More</button>
+                            </p>
+                        </div>
+                        <div class="recipe-info">
+                            <p><strong>Meal Time: </strong> ${mealTimes}</p>
+                            <p><strong>Ingredients: </strong> ${ingredients}</p>
+                        </div>
                     </div>
-                    <div class="recipe-info">
-                        <p><strong>Meal Time: </strong> ${mealTimes}</p>
-                        <p><strong>Ingredients: </strong> ${ingredients}</p>
-                    </div>
-                    
-                </div>
             `;
         }).join("");
     } catch (error) {
@@ -81,7 +85,7 @@ async function fetchRecipes() {
 async function populateFilters() {
     try {
         const response = await fetch("/tags");
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${ response.status } `);
 
         const data = await response.json();
         const filters = data.availableTags; // Use the structure from your existing endpoint
@@ -113,7 +117,7 @@ async function populateFilters() {
 // Helper function to populate dropdowns
 function populateDropdown(elementId, options) {
     const dropdown = document.getElementById(elementId);
-    dropdown.innerHTML = `<option value="">All</option>`; // Default option
+    dropdown.innerHTML = `< option value = "" > All</option > `; // Default option
 
     options.forEach(option => {
         const newOption = document.createElement("option");
@@ -135,7 +139,7 @@ function updateFilters() {
     if (mealTime) params.append("meal_time", mealTime);
 
     // Update the URL in browser without reloading
-    window.history.pushState({}, "", `?${params.toString()}`);
+    window.history.pushState({}, "", `? ${ params.toString() } `);
 
     // Fetch filtered recipes without full page reload
     fetchRecipes();
@@ -145,7 +149,22 @@ function updateFilters() {
 document.addEventListener("click", function (event) {
     if (event.target.matches(".continueReadingBtn")) {
         const recipeId = event.target.getAttribute("data-id");
-        window.location.href = `/recipe.html?id=${recipeId}`;
+        window.location.href = `/ recipe.html ? id = ${ recipeId } `;
     }
 });
 
+
+function toggleInstructions(button) {
+    const shortText = button.previousElementSibling.previousElementSibling;
+    const fullText = button.previousElementSibling;
+    
+    if (shortText.style.display === "none") {
+        shortText.style.display = "inline";
+        fullText.style.display = "none";
+        button.textContent = "Read More";
+    } else {
+        shortText.style.display = "none";
+        fullText.style.display = "inline";
+        button.textContent = "Show Less";
+    }
+}
